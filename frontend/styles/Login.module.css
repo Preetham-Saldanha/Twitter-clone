@@ -1,0 +1,116 @@
+/* .login {
+    display: flex ;
+} */
+
+/* .signin_page {
+    display: flex;
+    flex-direction: column;
+} */
+
+.signin_page {
+    /* display: flex;
+    flex-direction: column; */
+    align-items: center;
+    margin: 150px auto;
+    height: 500px;
+    width: 365px;
+    border: 1px solid  #00ADED;;
+    /* background-color: rgb(204, 207, 221); */
+    border-radius: 5px;
+    color: black;
+    font-family: sans-serif;
+    padding-top: 30px;
+    /* background: transparent; */
+}
+
+.form_box {
+    display: flex;
+    flex-direction: row;
+    overflow: hidden ;
+
+    /* justify-content: space-evenly; */
+}
+
+.form {
+    margin-top: 50px;
+    height: fit-content;
+    display: flex;
+    flex-direction: column;
+    /* align-items: center; */
+    justify-content: space-between;
+    text-align: left;
+}
+
+.form>input {
+   
+    border: none;
+    height: 25px;
+    background: transparent;
+    border-bottom: 1px solid grey;
+
+}
+
+.btn {
+    position: relative;
+    top: 30px;
+    left: 33.5px;
+    width: 100px;
+    height: 50px;
+    background: #00ADED;
+    border-radius: 30px;
+    z-index: 1;
+    
+}
+
+
+
+
+
+.login_form {
+
+
+    position: relative;
+    left: 63px;
+
+}
+
+.register_form {
+    position: relative;
+    left: 190px;
+
+}
+
+.login_head {
+    position: relative;
+    /* top: -40px; */
+    display: flex;
+    justify-content: space-evenly;
+    /* background: transparent; */
+}
+
+.login_head_btn {
+    /* background: transparent; */
+    /* position: relative; */
+    background: transparent;
+    width: 100px;
+    height: 50px;
+    border-radius: 30px;
+    /* border: 1px solid grey; */
+    background: #00ADED;
+    z-index: 2;
+    color: white;
+    
+}
+
+.submit_btn {
+    background: #00ADED;
+    width: 150px;
+    margin-top: 30px;
+    height: 42px;
+    border-radius: 20px;
+    /* border: 1px solid #00ADED; */
+    z-index: 2;
+    margin-left: 20px;
+    font-family: sans-serif;
+    color: white;
+}
