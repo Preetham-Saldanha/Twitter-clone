@@ -8,11 +8,11 @@ const saltRounds = 10
 const register = async (req, res) => {
     //add user to datbase
 
-    const { username, password, email } = req.body
+    const { username, password, email , firstname, lastname} = req.body
 
     console.log(username, password)
-    if (!username || !password) {
-        res.status(StatusCodes.BAD_REQUEST).send("Provide all email and password")
+    if (!username || !password || !firstname) {
+        res.status(StatusCodes.BAD_REQUEST).send("Provide all email , password and firstname")
         return
     }
     const [row1, feilds1] = await db.execute(`SELECT id FROM users  WHERE username='${username}'`)
@@ -23,12 +23,12 @@ const register = async (req, res) => {
     console.log("this prints")
 
     const hash = await bcrypt.hash(password, saltRounds)
-    await db.execute(`INSERT INTO users (username,password, email) VALUES("${username}","${hash}","${email}")`)
+    await db.execute(`INSERT INTO users (username,password, email, firstname, lastname) VALUES("${username}","${hash}","${email}", "${firstname}", "${lastname}")`)
     const [row, feilds] = await db.execute(`SELECT * FROM users WHERE username='${username}'`)
 
     const userData = row[0]
-    const token = jwt.sign({ username: req.body.username }, process.env.TOKEN_SECRET_KEY, { expiresIn: '15s' })
-    const refreshToken = jwt.sign({ username: req.body.username }, process.env.REFRESH_TOKEN_SECRET_KEY, { expiresIn: '30s' })
+    const token = jwt.sign({ username: req.body.username }, process.env.TOKEN_SECRET_KEY, { expiresIn: '30s' })
+    const refreshToken = jwt.sign({ username: req.body.username }, process.env.REFRESH_TOKEN_SECRET_KEY, { expiresIn: '45s' })
 
     // saving token in db
     const deleteLegacyToken = await db.execute(`DELETE FROM  refreshTokens WHERE username ="${username}"`)
@@ -41,6 +41,8 @@ const register = async (req, res) => {
         followers: userData.followers,
         following: userData.following,
         id: userData.id,
+        firstname:userData.firstname,
+        lastname:userData.lastname,
         accessToken: token
     })
 }
@@ -65,8 +67,8 @@ const login = async (req, res) => {
     const userData = row[0]
     const match = await bcrypt.compare(password, userData.password)
     if (match) {
-        const token = jwt.sign({ username: req.body.username }, process.env.TOKEN_SECRET_KEY, { expiresIn: '1d' })
-        const refreshToken = jwt.sign({ username: req.body.username }, process.env.REFRESH_TOKEN_SECRET_KEY, { expiresIn: '1d' })
+        const token = jwt.sign({ username: req.body.username }, process.env.TOKEN_SECRET_KEY, { expiresIn: '30s' })
+        const refreshToken = jwt.sign({ username: req.body.username }, process.env.REFRESH_TOKEN_SECRET_KEY, { expiresIn: '60s' })
 
         // saving token in db
 
@@ -80,6 +82,8 @@ const login = async (req, res) => {
             followers: userData.followers,
             following: userData.following,
             id: userData.id,
+            firstname:userData.firstname,
+            lastname:userData.lastname,
             accessToken: token
         })
     }

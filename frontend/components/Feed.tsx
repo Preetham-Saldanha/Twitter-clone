@@ -50,12 +50,19 @@ function Feed({ tweets: tweetsProp }: Props) {
 
     }
     catch (error) {
-      toast.error("log in again")
-      setTimeout(() => {
-        router.push({
-          pathname: "/login"
-        })
-      }, 1100)
+   
+      if (error.response && error.response.data) {
+        toast.error(error?.response.data)
+        setTimeout(() => {
+          router.push({
+            pathname: "/login"
+          })
+        }, 1100)
+    }
+    else {
+        toast.error(error.message)
+    }
+    
 
     }
   }
@@ -66,10 +73,11 @@ function Feed({ tweets: tweetsProp }: Props) {
       <Toaster position="top-center"
         reverseOrder={false} />
       <div className='col-span-7 lg:col-span-5 border-gray-100 border-x max-h-screen overflow-scroll scrollbar-hide '>
-        <div className='flex items-center justify-between '>
-          <h1 className='p-5 pb-0 text-xl font-bold mt-2 '>Home</h1>
+      { auth.username && <div className='flex items-center justify-between '>
+        <h1 className='p-5 pb-0 text-xl font-bold mt-2 '>Home</h1>
           <ArrowPathIcon onClick={refreshTweets} className='w-8 mr-5 mt-5 h-8 cursor-pointer transition-all duration-500  hover:rotate-180 active:scale-125 ease-out text-twitter ' />
-        </div>
+  
+        </div>}
         <TweetBox setTweets={setTweets} />
 
         <div>

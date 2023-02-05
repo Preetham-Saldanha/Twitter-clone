@@ -1,4 +1,5 @@
 const jwt = require("jsonwebtoken")
+const { StatusCodes } = require("http-status-codes")
 
 
 const auth = async (req, res, next) => {
@@ -16,7 +17,7 @@ const auth = async (req, res, next) => {
         next()
     }
     catch (error) {
-        throw new Error("Authentication failed!")
+      res.status(StatusCodes.BAD_REQUEST).send("log in again!")
     }
 }
 

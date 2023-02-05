@@ -7,6 +7,7 @@ import { fetchTweets } from '../utils/fetchtweets'
 import { Tweet } from '../typings'
 import useAuth from '../hooks/useAuth'
 import usePrivateAxios from '../hooks/usePrivateAxios'
+import axios from '../api_utils/axios'
 
 interface Props {
     tweets: Tweet[]
@@ -35,12 +36,11 @@ export const getServerSideProps: GetServerSideProps = async () => {
     // const {auth, setAuth} : any = useAuth()
  
   
-        // const data : Data =  (await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/tweet`)).data
+        const data : Data =  (await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/tweet`)).data
         // axiosPrivate.defaults.headers.common['Authorization'] = `Bearer ${auth.accessToken}`
         // const data: Data = (await axiosPrivate.get(`/api/v1/tweet`)).data
-        // const tweets: Tweet[] = data.tweets;
+        const tweets: Tweet[] = data.tweets;
 
-        const tweets :Tweet[]= [] 
     return {
         props: { tweets }
     }

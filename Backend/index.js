@@ -12,7 +12,8 @@ const db = connectDB
 const authRoutes = require("./routes/auth")
 
 const refreshRoute = require("./routes/refresh")
-const logoutRoute = require("./routes/logout")
+const logoutRoute = require("./routes/logout");
+const { getAllTweets } = require('./controllers/tweets');
 
 
 
@@ -32,6 +33,7 @@ app.get('/', (req, res) => {
 app.use('/api/v1/auth', authRoutes)
 app.use('/api/v1/refresh', refreshRoute)
 app.use('/api/v1/logout', logoutRoute)
+app.get('/api/v1/tweet',getAllTweets)
 app.use('/api/v1', authenticate, tweetRoutes);
 
 
@@ -55,6 +57,9 @@ const start = async () => {
     //       followers INT DEFAULT 0,
     //       following INT DEFAULT 0
     //     );
+    // const query = `ALTER TABLE users,
+    // ADD firstname varchar(255),
+    // ADD lastname varchar(255);`
 
     // const query = `CREATE TABLE refreshTokens (
     //   id INT AUTO_INCREMENT PRIMARY KEY,
