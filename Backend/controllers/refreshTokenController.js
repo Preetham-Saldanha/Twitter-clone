@@ -24,7 +24,7 @@ const handleRefreshToken = async (req, res) => {
 
         const { payload } = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET_KEY)
         if (payload.username !== foundUser) return res.sendStatus(403);
-        const accessToken = jwt.sign({ username: payload.username }, process.env.TOKEN_SECRET_KEY, { expiresIn: '1d' })
+        const accessToken = jwt.sign({ username: payload.username }, process.env.TOKEN_SECRET_KEY, { expiresIn: '3600s' })
         res.json({ accessToken })
     }
     catch (error) {
