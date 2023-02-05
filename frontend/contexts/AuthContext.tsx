@@ -12,6 +12,8 @@ export const AuthProvider = ({ children }) => {
         followers: -1,
         following: -1,
         id: -1,
+        firstname:'',
+        lastname:'',
         accessToken: ''
     })
 

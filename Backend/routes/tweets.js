@@ -44,7 +44,7 @@ router.route('/test').post((req, res, next)=>{
     console.log("testing post api...",req.body.message)
 })
 
-router.route('/tweet').get(getAllTweets).
+router.route('/tweet').
 post((req, res, next) => {
     upload(req, res, next, async function (err) {
         if (err) {
