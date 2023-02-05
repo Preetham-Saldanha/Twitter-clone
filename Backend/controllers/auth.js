@@ -27,12 +27,11 @@ const register = async (req, res) => {
     const [row, feilds] = await db.execute(`SELECT * FROM users WHERE username='${username}'`)
 
     const userData = row[0]
-    const token = jwt.sign({ username: req.body.username }, process.env.TOKEN_SECRET_KEY, { expiresIn: '30s' })
-    const refreshToken = jwt.sign({ username: req.body.username }, process.env.REFRESH_TOKEN_SECRET_KEY, { expiresIn: '45s' })
+    const token = jwt.sign({ username: req.body.username }, process.env.TOKEN_SECRET_KEY, { expiresIn: '3600s' })
+    const refreshToken = jwt.sign({ username: req.body.username }, process.env.REFRESH_TOKEN_SECRET_KEY, { expiresIn: '1d' })
 
     // saving token in db
-    const deleteLegacyToken = await db.execute(`DELETE FROM  refreshTokens WHERE username ="${username}"`)
-    if (deleteLegacyToken) await db.execute(`INSERT INTO refreshTokens (username, token) VALUES("${username}","${refreshToken}")`)
+    await db.execute(`INSERT INTO refreshTokens (username, token) VALUES("${username}","${refreshToken}")`)
     res.cookie('jwt', refreshToken, { httpOnly: true, maxAge: 24 * 60 * 60 * 1000 })
     res.status(StatusCodes.CREATED).json({
         username: userData.username,
@@ -67,13 +66,13 @@ const login = async (req, res) => {
     const userData = row[0]
     const match = await bcrypt.compare(password, userData.password)
     if (match) {
-        const token = jwt.sign({ username: req.body.username }, process.env.TOKEN_SECRET_KEY, { expiresIn: '30s' })
-        const refreshToken = jwt.sign({ username: req.body.username }, process.env.REFRESH_TOKEN_SECRET_KEY, { expiresIn: '60s' })
+        const token = jwt.sign({ username: req.body.username }, process.env.TOKEN_SECRET_KEY, { expiresIn: '3600s' })
+        const refreshToken = jwt.sign({ username: req.body.username }, process.env.REFRESH_TOKEN_SECRET_KEY, { expiresIn: '1d' })
 
         // saving token in db
 
-        await db.execute(`INSERT INTO refreshTokens (username, token) VALUES("${username}","${refreshToken}")`)
-
+        const deleteLegacyToken = await db.execute(`DELETE FROM  refreshTokens WHERE username ="${username}"`)
+        if (deleteLegacyToken) await db.execute(`INSERT INTO refreshTokens (username, token) VALUES("${username}","${refreshToken}")`)
         res.cookie('jwt', refreshToken, { httpOnly: true, maxAge: 24 * 60 * 60 * 1000 })
         res.status(StatusCodes.OK).json({
             username: userData.username,

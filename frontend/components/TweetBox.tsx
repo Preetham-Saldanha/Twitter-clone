@@ -6,6 +6,8 @@ import { Tweet } from '../typings'
 import { fetchTweets } from '../utils/fetchtweets'
 import { axiosPrivate } from '../api_utils/axios'
 import useAuth from '../hooks/useAuth'
+import toast from 'react-hot-toast'
+import { useRouter } from 'next/router'
 
 interface Props {
     setTweets: Dispatch<React.SetStateAction<Tweet[]>>
@@ -20,6 +22,7 @@ function TweetBox({ setTweets }: Props) {
     const [image, setImage] = useState<File>()
     const [isImageBoxOpen, setImageBoxOpen] = useState<boolean>(false)
     const imageInputRef = useRef<HTMLInputElement>()
+    const router = useRouter()
 
     const handleAttachImage = (event: ChangeEvent<HTMLInputElement>) => {
         event.preventDefault()
@@ -40,14 +43,13 @@ function TweetBox({ setTweets }: Props) {
         if (image !== undefined) formData.append("image", image)
         formData.append("tweet_text", tweet)
 
-        let axiosConfig = {
-            headers: {
-                'Content-Type': 'application/json;charset=UTF-8',
-                "Access-Control-Allow-Origin": "*",
-            }
-        };
-        formData.forEach(file => console.log("File: ", file));
-        console.log(formData.values())
+        // let axiosConfig = {
+        //     headers: {
+        //         'Content-Type': 'application/json;charset=UTF-8',
+        //         "Access-Control-Allow-Origin": "*",
+        //     }
+        // };
+      try{
         // const res = await axiosPrivate.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/tweet`, formData)
         const res = await axiosPrivate.post(`/api/v1/tweet`, formData, {
             headers: { "Content-Type": "multipart/form-data" }
@@ -61,6 +63,24 @@ function TweetBox({ setTweets }: Props) {
         const data: Data = (await axiosPrivate.get(`/api/v1/tweet`)).data
         const newTweets: Tweet[] = data.tweets;
         setTweets(newTweets)
+
+    }
+    catch(error){
+        if (error.response && error.response.data) {
+            toast.error(error?.response.data)
+
+            if(error?.response?.data==="log in again!"){
+                setTimeout(() => {
+                    router.replace({
+                        pathname: "/login",      
+                    },) })
+            }
+        }
+        else {
+            toast.error(error.message)
+        }
+        
+    }
 
     }
 
