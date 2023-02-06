@@ -21,7 +21,7 @@ function Home({ tweets }: Props) {
 
     return (
         <div className='grid grid-cols-9  font-roboto  lg:max-w-6xl mx-auto'>        
-            <SideBar />
+            <SideBar row={1} />
 
             <Feed tweets={tweets} />
 

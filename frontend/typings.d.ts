@@ -23,7 +23,7 @@ export type UserAuth= {
     followers: number,
     following: number,
     id: number,
-    accessToken: string,
+    accessToken ?: string,
     firstname: string,
     lastname:string
 }
