@@ -26,13 +26,25 @@ import useAuth from '../hooks/useAuth'
 import axios from '../api_utils/axios'
 import { toast } from 'react-hot-toast'
 import { useRouter } from 'next/router'
-function SideBar() {
+
+interface Props{
+  row: number
+}
+
+function SideBar(props: Props) {
   const router = useRouter()
   const { auth, setAuth }: any = useAuth()
-  const [activeRow, setActiveRow] = useState(1)
+  const [activeRow, setActiveRow] = useState(props.row)
   const handleActive: (row: number) => void = (row: number) => {
 
-    setActiveRow(row)
+    // setActiveRow(row)
+    if(row===1){
+      router.push("/home")
+    }
+   else if(row===5){
+      router.push("/profile")
+    }
+
   }
 
   const logOut: () => void = async () => {
@@ -72,7 +84,7 @@ function SideBar() {
           {/* <SideBarRow Icon={BookmarkIcon} title={""} /> */}
           <SideBarRow Icon={activeRow === 3 ? solidQueueListIcon : QueueListIcon} title={"lists"} handleActive={handleActive} rowNumber={3} activeRow={activeRow} />
           <SideBarRow Icon={activeRow === 4 ? solidBookmarkIcon : BookmarkIcon} title={"Bookmarks"} handleActive={handleActive} rowNumber={4} activeRow={activeRow} />
-          <SideBarRow Icon={activeRow === 5 ? solidUserIcon : UserIcon} title={auth.username === "" ? "Sign in" : "Profile"} handleActive={handleActive} rowNumber={5} activeRow={activeRow} />
+          <SideBarRow Icon={activeRow === 5 ? solidUserIcon : UserIcon} title={auth.username === "" ? "Sign in" : "Profile"}  handleActive={handleActive} rowNumber={5} activeRow={activeRow} />
           <SideBarRow Icon={activeRow === 6 ? solidArrowLeftOnRectangleIcon : ArrowLeftOnRectangleIcon} title={"Log out"} handleActive={handleActive} rowNumber={6} activeRow={activeRow} logOut={logOut} />
         </>
       }  </div>

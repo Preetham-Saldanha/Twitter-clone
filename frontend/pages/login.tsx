@@ -10,7 +10,7 @@ import axios from '../api_utils/axios';
 // import useAuth from '../hooks/useAuth';
 import useAuth from '../contexts/AuthContext'
 
-function login() {
+function Login() {
     const [name, setName] = useState("");
     const [password, setPassword] = useState("");
     // const { auth, setAuth }: any = useAuth();
@@ -65,7 +65,7 @@ function login() {
 
                         <button className='w-3/4 lg:w-2/3 h-11 bg-black hover:bg-slate-900 text-white rounded-full text-lg font-semibold' onClick={(e) => handleSubmit(e)}>Sign in</button>
                     </form>
-                    <p className='text-slate-600 text-lg text-left mt-5 m-auto w-3/4 lg:w-2/3'>Don't have an account? <Link className='text-twitter cursor-pointer' href="/register" >Sign up</Link></p>
+                    <p className="text-slate-600 text-lg text-left mt-5 m-auto w-3/4 lg:w-2/3">Don't have an account? <Link className="text-twitter cursor-pointer" href="/register" >Sign up</Link></p>
                 </div>
             </div>
         </>
@@ -73,4 +73,4 @@ function login() {
     )
 }
 
-export default login
+export default Login
