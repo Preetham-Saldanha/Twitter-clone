@@ -18,14 +18,14 @@ favorite_count:number
 
 export type UserAuth= {
     username: string,
-    email: string,
-    profile_image_path: string,
-    followers: number,
-    following: number,
-    id: number,
+    email?: string,
+    profile_image_path?: string,
+    followers?: number,
+    following?: number,
+    id?: number,
     accessToken ?: string,
-    firstname: string,
-    lastname:string
+    firstname?: string,
+    lastname?:string
 }
 // {
 //     "tweet_id": 12,

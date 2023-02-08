@@ -1,17 +1,40 @@
 import { ArrowLeftIcon, BackwardIcon } from '@heroicons/react/24/outline'
 import Image from 'next/image'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { UserAuth } from '../typings'
 import twitterLogo from "../public/Twitter_bird_logo.png"
 import useAuth from '../hooks/useAuth'
+import axios from '../api_utils/axios'
 
 function ProfileSection(props: UserAuth) {
 
   const { auth }: any = useAuth();
-  const [selectedBar, setSelectedBar]= useState<number>(1)
-const handleNavbarClick =(section : number)=>{
-setSelectedBar(section)
+  const [selectedBar, setSelectedBar] = useState<number>(1)
+  const handleNavbarClick = (section: number) => {
+    setSelectedBar(section)
+  }
+
+  type profileDataType = {
+    username: string;
+    email: string;
+    profile_image_path:string;
+    profile_image: File;
+    followers: number;
+    following: number;
+    id: number;
+    firstname: string;
+    lastname: string;
+
 }
+
+const [profileData,setProfileData] =  useState<profileDataType>();
+useEffect(()=>{
+  (async ()=>{
+    const data : profileDataType = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/user`)
+    setProfileData(data)
+  })()
+
+},[])
 
   return (
     <div className='col-span-7 lg:col-span-5 border-gray-100 border-x max-h-screen overflow-scroll scrollbar-hide h-screen'>
@@ -48,10 +71,10 @@ setSelectedBar(section)
       {/* navbar for profile */}
 
       <div className='flex w-full text-center mt-4 h-12 cursor-pointer '>
-        <div className='text-gray-500 hover:bg-slate-200 w-1/4 pt-2 ' onClick={()=>handleNavbarClick(1)}>Tweets {selectedBar==1 &&<p className='border-b-4 border-twitter relative top-3 rounded-xl'></p>}</div>
-        <div  className='text-gray-500 hover:bg-slate-200 w-4/12 pt-2' onClick={()=>handleNavbarClick(2)}>Tweets & Replies {selectedBar==2 && <p className='border-b-4 border-twitter relative top-3 rounded-xl'></p>}</div>
-        <div className='text-gray-500 hover:bg-slate-200 w-1/4 pt-2' onClick={()=>handleNavbarClick(3)}> Media {selectedBar==3 && <p className='border-b-4 border-twitter relative top-3 rounded-xl'></p>}</div>
-        <div className='text-gray-500 hover:bg-slate-200 w-1/4 pt-2' onClick={()=>handleNavbarClick(4)}>Likes {selectedBar==4 && <p className='border-b-4 border-twitter relative top-3 rounded-xl'></p>}</div>
+        <div className='text-gray-500 hover:bg-slate-200 w-1/4 pt-2 ' onClick={() => handleNavbarClick(1)}>Tweets {selectedBar == 1 && <p className='border-b-4 border-twitter relative top-3 rounded-xl'></p>}</div>
+        <div className='text-gray-500 hover:bg-slate-200 w-4/12 pt-2' onClick={() => handleNavbarClick(2)}>Tweets & Replies {selectedBar == 2 && <p className='border-b-4 border-twitter relative top-3 rounded-xl'></p>}</div>
+        <div className='text-gray-500 hover:bg-slate-200 w-1/4 pt-2' onClick={() => handleNavbarClick(3)}> Media {selectedBar == 3 && <p className='border-b-4 border-twitter relative top-3 rounded-xl'></p>}</div>
+        <div className='text-gray-500 hover:bg-slate-200 w-1/4 pt-2' onClick={() => handleNavbarClick(4)}>Likes {selectedBar == 4 && <p className='border-b-4 border-twitter relative top-3 rounded-xl'></p>}</div>
       </div>
     </div>
   )
