@@ -3,7 +3,7 @@ import React, { SVGProps } from 'react'
 interface Props {
   Icon: (props: SVGProps<SVGSVGElement>) => JSX.Element,
   title: String,
-  handleActive: (row: number) => void, 
+  handleActive?: (row: number) => void, 
   rowNumber: number,
   activeRow :number,
   logOut?: ()=>void

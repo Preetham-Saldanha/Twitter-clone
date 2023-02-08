@@ -8,7 +8,7 @@ function Profile() {
     <div className='grid grid-cols-9  font-roboto  lg:max-w-6xl mx-auto'>        
     <SideBar row={5} />
 
-  <ProfileSection/>
+  <ProfileSection username='preetham'/>
 
     <Widget /></div>
 )
