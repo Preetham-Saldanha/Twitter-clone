@@ -3,6 +3,8 @@ const router = express.Router()
 // const { getAllTweets, postTweet, deleteTweet, updateTweet } = require("../controllers/tweets")
 const multer = require('multer')
 
+const { removeProfileImage , updateUser, getUserProfile} = require("../controllers/user")
+
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -21,7 +23,7 @@ const upload = multer({
     fileFilter: function (req, file, cb) {
         checkFileType(file, cb)
     }
-}).single('image')
+}).single('profile_image')
 
 function checkFileType(file, cb) {
     const filetypes = /jpeg|jpg|png/;
@@ -40,7 +42,7 @@ function checkFileType(file, cb) {
 
 
 
-router.route('/user').
+router.route('/').
 post((req, res, next) => {
     upload(req, res, next, async function (err) {
         if (err) {
@@ -49,6 +51,12 @@ post((req, res, next) => {
         
     })
     console.log("the files are",req.body)
-}, postTweet)
+}, updateUser)
+
+
+router.route('/:id').get(getUserProfile)
+
+
+router.route('/user/removeProfileImage').delete(removeProfileImage)
 
 module.exports = router

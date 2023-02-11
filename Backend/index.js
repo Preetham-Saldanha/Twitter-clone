@@ -13,6 +13,7 @@ const authRoutes = require("./routes/auth")
 
 const refreshRoute = require("./routes/refresh")
 const logoutRoute = require("./routes/logout");
+const userRoutes= require('./routes/user')
 const { getAllTweets } = require('./controllers/tweets');
 
 
@@ -21,7 +22,7 @@ const { getAllTweets } = require('./controllers/tweets');
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }))
 // app.use(cors({ origin: `${process.env.ORIGIN_URL}` , credentials: true, methods:["GET,HEAD,PUT,PATCH,POST,DELETE"]}))
-app.use(cors({ origin: `http://localhost:3000` , credentials: true, methods:["GET,HEAD,PUT,PATCH,POST,DELETE"]}))
+app.use(cors({ origin: `http://localhost:3000`, credentials: true, methods: ["GET,HEAD,PUT,PATCH,POST,DELETE"] }))
 app.use(express.static('public'));
 app.use(express.json());
 
@@ -33,7 +34,8 @@ app.get('/', (req, res) => {
 app.use('/api/v1/auth', authRoutes)
 app.use('/api/v1/refresh', refreshRoute)
 app.use('/api/v1/logout', logoutRoute)
-app.get('/api/v1/tweet',getAllTweets)
+app.get('/api/v1/tweet', getAllTweets)
+app.get('api/v1/user',authenticate,userRoutes)
 app.use('/api/v1', authenticate, tweetRoutes);
 
 
@@ -60,6 +62,9 @@ const start = async () => {
     // const query = `ALTER TABLE users,
     // ADD firstname varchar(255),
     // ADD lastname varchar(255);`
+    // const query = `ALTER TABLE users ADD bio VARCHAR(160)`
+
+    // const query = `ALTER TABLE tweets ADD profile_image_path varchar(255)`
 
     // const query = `CREATE TABLE refreshTokens (
     //   id INT AUTO_INCREMENT PRIMARY KEY,
@@ -67,7 +72,14 @@ const start = async () => {
     //   token VARCHAR(255) NOT NULL
     // );
     // `
-    // const [ row, feilds] = await db.execute(query)
+    // const [row, feilds] = await db.execute(query)
+    // console.log(row, feilds)
+
+
+//     UPDATE table1
+// SET firstname = table2.firstname, lastname = table2.lastname
+// FROM table2
+// WHERE table1.id = table2.id;
 
   } catch (error) {
     console.log(error);

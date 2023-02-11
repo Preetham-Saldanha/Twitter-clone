@@ -1,42 +1,41 @@
 import { ArrowLeftIcon, BackwardIcon } from '@heroicons/react/24/outline'
 import Image from 'next/image'
 import React, { useEffect, useState } from 'react'
-import { UserAuth } from '../typings'
+import { profileDataType, UserAuth } from '../typings'
 import twitterLogo from "../public/Twitter_bird_logo.png"
 import useAuth from '../hooks/useAuth'
 import axios from '../api_utils/axios'
+import EditProfileModal from './editProfileModal'
+import { Toaster } from 'react-hot-toast'
 
-function ProfileSection(props: UserAuth) {
+
+
+function ProfileSection(props : profileDataType) {
 
   const { auth }: any = useAuth();
   const [selectedBar, setSelectedBar] = useState<number>(1)
   const handleNavbarClick = (section: number) => {
     setSelectedBar(section)
   }
+const [enableEdit, setEnableEdit] = useState(false) ;
 
-  type profileDataType = {
-    username: string;
-    email: string;
-    profile_image_path:string;
-    profile_image: File;
-    followers: number;
-    following: number;
-    id: number;
-    firstname: string;
-    lastname: string;
-
-}
 
 const [profileData,setProfileData] =  useState<profileDataType>();
-useEffect(()=>{
-  (async ()=>{
-    const data : profileDataType = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/user`)
-    setProfileData(data)
-  })()
 
-},[])
+// useEffect(()=>{
+//   (async ()=>{
+//     const data : profileDataType = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/user`)
+//     setProfileData(data)
+//   })()
+// },[])
 
   return (
+    <>
+    <Toaster
+                position="top-center"
+                reverseOrder={false}
+            />
+  { enableEdit && <EditProfileModal enableEdit={enableEdit} setEnableEdit={setEnableEdit} profileData={profileData} setProfileData={setProfileData}></EditProfileModal>}
     <div className='col-span-7 lg:col-span-5 border-gray-100 border-x max-h-screen overflow-scroll scrollbar-hide h-screen'>
 
       <div className='flex mt-3' >
@@ -52,12 +51,12 @@ useEffect(()=>{
       <div className='h-2/6 w-full '>
         <div className='bg-slate-300 h-4/6 w-full'>
         </div>
-        <div className=' flex relative bg-black h-32 w-32 ml-4 rounded-full -mt-16 justify-center items-center'>
-          <Image src={twitterLogo} alt="" height={70} width={70} />
+        <div className=' flex relative bg-white h-32 w-32 ml-4 rounded-full -mt-16 justify-center items-center '>
+          <Image src={twitterLogo} alt="" height={100} width={100} />
         </div>
 
         <div className='flex w-full justify-end pr-5 '>
-          {props.username === auth.username ? <button className=' relative -mt-12 h-10 w-1/6 border-gray-500 font-semibold border rounded-3xl hover:bg-slate-500'>Edit Profile</button> : <button className=' relative -mt-12 h-10 w-1/6 bg-black font-semibold border rounded-3xl text-white'>Follow</button>}
+          {props.username === auth.username ? <button onClick={()=>setEnableEdit(prev=>!prev)} className=' relative -mt-12 h-10 w-1/6 border-gray-500 font-semibold border rounded-3xl hover:bg-slate-500' >Edit Profile</button> : <button className=' relative -mt-12 h-10 w-1/6 bg-black font-semibold border rounded-3xl text-white'>Follow</button>}
         </div>
       </div>
 
@@ -77,6 +76,7 @@ useEffect(()=>{
         <div className='text-gray-500 hover:bg-slate-200 w-1/4 pt-2' onClick={() => handleNavbarClick(4)}>Likes {selectedBar == 4 && <p className='border-b-4 border-twitter relative top-3 rounded-xl'></p>}</div>
       </div>
     </div>
+    </>
   )
 }
 

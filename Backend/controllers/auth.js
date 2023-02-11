@@ -4,11 +4,13 @@ const { StatusCodes } = require("http-status-codes")
 const db = require("../db/connect")
 const bcrypt = require("bcrypt")
 const saltRounds = 10
+const fs = require("fs");
+const { STATUS_CODES } = require("http");
 
 const register = async (req, res) => {
     //add user to datbase
 
-    const { username, password, email , firstname, lastname} = req.body
+    const { username, password, email, firstname, lastname } = req.body
 
     console.log(username, password)
     if (!username || !password || !firstname) {
@@ -37,11 +39,9 @@ const register = async (req, res) => {
         username: userData.username,
         email: userData.email,
         profile_image_path: userData.profile_image_path,
-        followers: userData.followers,
-        following: userData.following,
         id: userData.id,
-        firstname:userData.firstname,
-        lastname:userData.lastname,
+        firstname: userData.firstname,
+        lastname: userData.lastname,
         accessToken: token
     })
 }
@@ -58,7 +58,7 @@ const login = async (req, res) => {
         return
     }
     const [row, feilds] = await db.execute(`SELECT * FROM users WHERE username='${username}'`)
-    if (row.length === 0 || row[0].username!==username) {
+    if (row.length === 0 || row[0].username !== username) {
         // throw new Error("invalid credentials")
         res.status(StatusCodes.NOT_FOUND).send("invalid credentials")
         return
@@ -78,11 +78,9 @@ const login = async (req, res) => {
             username: userData.username,
             email: userData.email,
             profile_image_path: userData.profile_image_path,
-            followers: userData.followers,
-            following: userData.following,
             id: userData.id,
-            firstname:userData.firstname,
-            lastname:userData.lastname,
+            firstname: userData.firstname,
+            lastname: userData.lastname,
             accessToken: token
         })
     }
@@ -92,17 +90,11 @@ const login = async (req, res) => {
     }
 }
 
-const updateUser = async (req, res) => {
-    //update user details in db
-    const token = jwt.sign({ username: req.body.username }, process.env.TOKEN_SECRET_KEY, { expiresIn: 60 * 60 })
-    res.status(StatusCodes.OK).json({
-        username: req.body.username,
-        accessToken: token
-    })
-}
+
+
 
 module.exports = {
     register,
     login,
-    updateUser,
+   
 };
