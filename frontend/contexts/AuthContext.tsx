@@ -9,8 +9,6 @@ export const AuthProvider = ({ children }) => {
         username: '',
         email: '',
         profile_image_path: '',
-        followers: -1,
-        following: -1,
         id: -1,
         firstname:'',
         lastname:'',

@@ -16,13 +16,13 @@ const getAllTweets = asyncWrapper(async (req, res) => {
 
 const postTweet = asyncWrapper(async (req, res, next) => {
     console.log("adding tweet was attempted")
-    console.log("files are",req.files)
+    console.log("files are", req.files)
     const tweet_image_path = req.file?.filename
     const { username, tweet_text } = req.body
     const date = new Date()
 
     const created_at = `${date.toISOString().slice(0, 10)} ${date.toTimeString().slice(0, 8)}`
-    const tweet = new Tweet(null,username, tweet_text, created_at, 0,0, tweet_image_path)
+    const tweet = new Tweet(null, username, tweet_text, created_at, 0, 0, tweet_image_path)
     const result = await tweet.Post()
 
     res.status(StatusCodes.OK).json(result)
@@ -30,9 +30,19 @@ const postTweet = asyncWrapper(async (req, res, next) => {
 
 const deleteTweet = asyncWrapper(async (req, res, next) => {
     const _id = req.params.id;
+    const [oldRow, oldFeilds] = await db.execute(`SELECT tweet_image_path FROM tweets WHERE id="${_id}`)
 
-    const result = await db.execute(`DELETE FROM tweets WHERE tweet_id = '${_id}'`)
+    if (oldRow[0].tweet_image_path) {
+        const result = await db.execute(`DELETE FROM tweets WHERE tweet_id = '${_id}'`)
+        fs.unlink("/public/tweetImages/" + profile_image_path, (err) => {
+            if (err) {
+                res.status(500).send({
+                    message: "Could not delete the file. " + err,
+                });
+            }
+        })
 
+    }
     if (result[0].affectedRows === 1) {
         res.status(StatusCodes.OK).json(result)
     }

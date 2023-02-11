@@ -18,15 +18,28 @@ favorite_count:number
 
 export type UserAuth= {
     username: string,
-    email?: string,
-    profile_image_path?: string,
-    followers?: number,
-    following?: number,
-    id?: number,
-    accessToken ?: string,
-    firstname?: string,
-    lastname?:string
+    email: string,
+    profile_image_path: string,
+    id: number,
+    accessToken : string,
+    firstname: string,
+    lastname:string,
+  
 }
+
+export type profileDataType = {
+    username: string;
+    email: string;
+    profile_image_path:string;
+    profile_image?: File;
+    followers: number;
+    following: number;
+    id: number;
+    firstname: string;
+    lastname: string;
+    bio:string
+  
+  }
 // {
 //     "tweet_id": 12,
 //     "username": "Zebra",
