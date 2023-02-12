@@ -10,22 +10,23 @@ function Profile() {
 
   const { auth }: any = useAuth()
   const [profileData, setProfileData] = useState<profileDataType>()
-  async function getUserDetails() {
-    const result : profileDataType= await axiosPrivate.get(`/api/v1/user/${auth.username}`)
-    if (result) {
-      console.log(result)
-      setProfileData(result)
-    }
-  }
-  useEffect(() => {
-    getUserDetails()
-  }, [])
+  // async function getUserDetails() {
+  //   const result : profileDataType= await axiosPrivate.get(`/api/v1/user/${auth.username}`)
+  //   if (result) {
+  //     console.log(result)
+  //     setProfileData(result)
+  //   }
+  // }
+  // useEffect(() => {
+  //   getUserDetails()
+  // }, [])
+
 
   return (
     <div className='grid grid-cols-9  font-roboto  lg:max-w-6xl mx-auto'>
       <SideBar row={5} />
 
-      <ProfileSection {...profileData} />
+      <ProfileSection username={auth.username}/>
 
       <Widget /></div>
   )

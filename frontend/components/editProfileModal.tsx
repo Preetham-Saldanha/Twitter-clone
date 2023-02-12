@@ -4,18 +4,28 @@ import Image, { StaticImageData } from 'next/image'
 import { XMarkIcon } from '@heroicons/react/24/outline'
 import { toast } from 'react-hot-toast'
 import { axiosPrivate } from '../api_utils/axios'
+import { profileDataType } from '../typings'
+import { useRouter } from 'next/router'
 function EditProfileModal(props) {
 
-    const [firstname, setFirstName] = useState<string>()
-    const [lastName, setLastName] = useState<string>()
-    const [bio, setBio] = useState<string>()
-    const [location, setLocation] = useState<string>()
+    const router = useRouter()
+    const [firstname, setFirstName] = useState<string>(props?.firstname)
+    const [lastName, setLastName] = useState<string>(props?.lastname)
+    const [bio, setBio] = useState<string>(props?.bio)
+    const [location, setLocation] = useState<string>(props?.location)
     const [image, setImage] = useState<File>()
 
     const [isSubmit, setIsSubmit] = useState<boolean>(false)
 
+    const imageUrl = (props.profile_image_path !== "undefined" || props.profile_image_path !== null) ? `http://localhost:5000/profileImages/${props.profile_image_path}` : "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ad/Placeholder_no_text.svg/768px-Placeholder_no_text.svg.png"
+
+    const [imageUrlState, setImageUrlState] = useState(imageUrl)
     const changeProfilePhoto: (photo: File) => void = (photo: File) => {
-        if (photo) setImage(photo)
+        console.log(photo)
+        if (photo) {
+            setImage(photo)
+            setImageUrlState(URL.createObjectURL(photo))
+        }
     }
 
 
@@ -55,18 +65,56 @@ function EditProfileModal(props) {
     async function updateUser() {
         const formData = new FormData()
         formData.append("firstname", firstname)
-        formData.append("lastName", lastName)
+        formData.append("lastname", lastName)
         formData.append("bio", bio)
+        console.log(image, 'this is image')
+        if (image !== undefined) {
+            formData.append("image", image)
+        }
+       
         formData.append("id", props.id)
-        if (image !== undefined)  formData.append("profile_image",image)
-        const result = await axiosPrivate.post("/api/v1/user", formData, {
-            headers: { "Content-Type": "multipart/form-data" }
-        })
-        console.log(result)
+        // for (let k of  formData.entries()){
+        //     console.log(k)
+        // }
+
+        
+          let axiosConfig = {
+            headers: {
+                "Content-Type": "multipart/form-data",
+                // "Access-Control-Allow-Origin": "*",
+            }
+        };
+       
+        try {
+            const result = await axiosPrivate.post("/api/v1/user/", formData,axiosConfig)
+            if (result.data.message === "succesfully updated") {
+                toast.success("Updated your profile!")
+            }
+            props.setEnableEdit(prev => !prev)
+            console.log(result)
+            setTimeout(() => toast.dismiss(), 1100)
+        } catch (error) {
+            if (error.response && error.response.data) {
+                toast.error(error?.response.data)
+
+                if (error?.response?.data === "log in again!") {
+                    setTimeout(() => {
+                        router.replace({
+                            pathname: "/login",
+                        },)
+                    })
+                }
+            }
+            else {
+                toast.error(error.message)
+            }
+
+        }
+
     }
 
     useEffect(() => {
-      
+
         if (isSubmit) {
             updateUser()
         }
@@ -94,16 +142,17 @@ function EditProfileModal(props) {
                             <label className=' flex  bg-white h-32 w-32 ml-4 rounded-full -mt-16 justify-center items-center z-50 p-0'>
                                 <input type="file" onChange={(e) => changeProfilePhoto(e.target.files[0])} className='opacity-0 hidden ' />
                                 {/* <div className=' flex relative bg-white h-32 w-32 ml-4 rounded-full -mt-16 justify-center items-center z-50 '> */}
-                                <Image src={image ? URL.createObjectURL(image) : twitterLogo} alt="" height={100} width={100} className="rounded-full z-50 object-cover" />
+                                {/* <Image src={image ? URL.createObjectURL(image) : imageUrlState} alt="" height={100} width={100} className="rounded-full z-50 object-cover" /> */}
+                                {<img src={`${imageUrlState}`} className="rounded-full" />}
                                 {/* </div> */}
                             </label>
                         </div>
 
                         <div className='px-3 flex-col space-y-3 pb-6'>
-                            <input type="text" className='border-gray-400 border rounded-md w-full h-10 p-3 text-gray-500' placeholder='firstname' value={firstname} onChange={(e)=>{setFirstName(e.target.value)}} />
-                            <input type="text" className='border-gray-400 border rounded-md w-full h-10 p-3 text-gray-500 ' placeholder='lastname' value={lastName} onChange={(e)=>{setLastName(e.target.value)}}/>
-                            <textarea className='border-gray-400 border rounded-md w-full h-40 p-3 text-gray-500' placeholder='enter bio here' value={bio}  onChange={(e)=>{setBio(e.target.value)}}/>
-                            <input type="text" className='border-gray-400 border rounded-md w-full h-10 p-3 text-gray-500' placeholder='location' value={location} onChange={(e)=>{setLocation(e.target.value)}}/>
+                            <input type="text" className='border-gray-400 border rounded-md w-full h-10 p-3 text-gray-500' placeholder='firstname' value={firstname} onChange={(e) => { setFirstName(e.target.value) }} />
+                            <input type="text" className='border-gray-400 border rounded-md w-full h-10 p-3 text-gray-500 ' placeholder='lastname' value={lastName} onChange={(e) => { setLastName(e.target.value) }} />
+                            <textarea className='border-gray-400 border rounded-md w-full h-40 p-3 text-gray-500' placeholder='enter bio here' value={bio} onChange={(e) => { setBio(e.target.value) }} />
+                            <input type="text" className='border-gray-400 border rounded-md w-full h-10 p-3 text-gray-500' placeholder='location' value={location} onChange={(e) => { setLocation(e.target.value) }} />
                         </div>
                     </form>
                 </div>

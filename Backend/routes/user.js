@@ -2,7 +2,7 @@ const express = require("express")
 const router = express.Router()
 // const { getAllTweets, postTweet, deleteTweet, updateTweet } = require("../controllers/tweets")
 const multer = require('multer')
-
+const path = require('node:path');
 const { removeProfileImage , updateUser, getUserProfile} = require("../controllers/user")
 
 
@@ -23,7 +23,7 @@ const upload = multer({
     fileFilter: function (req, file, cb) {
         checkFileType(file, cb)
     }
-}).single('profile_image')
+}).single('image')
 
 function checkFileType(file, cb) {
     const filetypes = /jpeg|jpg|png/;
@@ -40,7 +40,7 @@ function checkFileType(file, cb) {
 
 }
 
-
+router.route('/:id').get(getUserProfile)
 
 router.route('/').
 post((req, res, next) => {
@@ -48,15 +48,15 @@ post((req, res, next) => {
         if (err) {
             console.log(err)
         }
-        
+        console.log(req.files)
     })
     console.log("the files are",req.body)
 }, updateUser)
 
 
-router.route('/:id').get(getUserProfile)
 
 
-router.route('/user/removeProfileImage').delete(removeProfileImage)
+
+// router.route('/removeProfileImage').delete(removeProfileImage)
 
 module.exports = router

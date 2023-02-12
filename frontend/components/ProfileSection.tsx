@@ -4,13 +4,14 @@ import React, { useEffect, useState } from 'react'
 import { profileDataType, UserAuth } from '../typings'
 import twitterLogo from "../public/Twitter_bird_logo.png"
 import useAuth from '../hooks/useAuth'
-import axios from '../api_utils/axios'
+import axios, { axiosPrivate } from '../api_utils/axios'
 import EditProfileModal from './editProfileModal'
 import { Toaster } from 'react-hot-toast'
+import TimeAgo from 'timeago-react'
 
 
 
-function ProfileSection(props : profileDataType) {
+function ProfileSection(props :{username : string}) {
 
   const { auth }: any = useAuth();
   const [selectedBar, setSelectedBar] = useState<number>(1)
@@ -21,6 +22,21 @@ const [enableEdit, setEnableEdit] = useState(false) ;
 
 
 const [profileData,setProfileData] =  useState<profileDataType>();
+
+async function getUserDetails() {
+  const result : {user: profileDataType[]}= await (await axiosPrivate.get(`/api/v1/user/${props.username}`)).data
+  console.log(result)
+  if (result) {
+    console.log(result)
+    setProfileData(result.user[0])
+  }
+}
+
+
+useEffect(() => {
+  getUserDetails()
+}, [])
+
 
 // useEffect(()=>{
 //   (async ()=>{
@@ -35,7 +51,7 @@ const [profileData,setProfileData] =  useState<profileDataType>();
                 position="top-center"
                 reverseOrder={false}
             />
-  { enableEdit && <EditProfileModal enableEdit={enableEdit} setEnableEdit={setEnableEdit} profileData={profileData} setProfileData={setProfileData}></EditProfileModal>}
+  { enableEdit && <EditProfileModal enableEdit={enableEdit} setEnableEdit={setEnableEdit} {...profileData} setProfileData={setProfileData}></EditProfileModal>}
     <div className='col-span-7 lg:col-span-5 border-gray-100 border-x max-h-screen overflow-scroll scrollbar-hide h-screen'>
 
       <div className='flex mt-3' >
@@ -43,7 +59,7 @@ const [profileData,setProfileData] =  useState<profileDataType>();
         <div className='px-3'><ArrowLeftIcon className='h-6 w-6' /></div>
         <div>
           {/* <p>{props.firstname} {props.lastname}</p> */}
-          <p className='font-bold'>Preetham Saldanha</p>
+          <p className='font-bold'>{profileData?.firstname} {profileData?.lastname}</p>
           <p className='text-sm'>5 tweets</p>
         </div>
       </div>
@@ -52,7 +68,7 @@ const [profileData,setProfileData] =  useState<profileDataType>();
         <div className='bg-slate-300 h-4/6 w-full'>
         </div>
         <div className=' flex relative bg-white h-32 w-32 ml-4 rounded-full -mt-16 justify-center items-center '>
-          <Image src={twitterLogo} alt="" height={100} width={100} />
+          <Image src={(profileData?.profile_image_path && profileData.profile_image_path!=="undefined")? `http://localhost:5000/profileImages/${profileData.profile_image_path}`: twitterLogo } alt="" height={100} width={100} />
         </div>
 
         <div className='flex w-full justify-end pr-5 '>
@@ -61,10 +77,10 @@ const [profileData,setProfileData] =  useState<profileDataType>();
       </div>
 
       <div className=' relative flex-col px-3 -mt-3'>
-        <p className='font-bold text-2xl leading-5'>Preetham Saldanha</p>
-        <p className=' text-gray-500 '> @preetham</p>
-        <p className=' text-gray-500 mt-3'> joined january 2022</p>
-        <p className=' text-gray-500 mt-3'> <span className='text-black font-semibold'>1</span> follower <span className='text-black font-semibold'>1</span> followed</p>
+        <p className='font-bold text-2xl leading-5'>{profileData?.firstname} {profileData?.lastname}</p>
+        <p className=' text-gray-500 '> @{profileData?.username}</p>
+        <p className=' text-gray-500 mt-3'> joined <TimeAgo datetime={profileData?.created_at}/></p>
+        <p className=' text-gray-500 mt-3'> <span className='text-black font-semibold'>{profileData?.followers}</span> follower <span className='text-black font-semibold'>{profileData?.following}</span> followed</p>
       </div>
 
       {/* navbar for profile */}

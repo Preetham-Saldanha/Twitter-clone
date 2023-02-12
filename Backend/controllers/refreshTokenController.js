@@ -5,26 +5,27 @@ const db = require("../db/connect")
 const handleRefreshToken = async (req, res) => {
 
     // validate user
-
-    const cookies = req.cookies
-    i
-    if (!cookies?.jwt) {
+// console.log(req.headers.cookie,"this")
+    const cookie = req.headers.cookie
+        if (!cookie) {
         return res.sendStatus(401)
     }
 
-    const refreshToken = cookies.jwt
+    const refreshToken = cookie.split("=")[1]
 
 
     const [row, feilds] = await db.execute(`SELECT * FROM refreshTokens WHERE token='${refreshToken}'`)
+    // console.log(row)
     if (row.length === 0) return res.sendStatus(403)
     const foundUser = row[0].username
 
 
     try {
 
-        const { payload } = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET_KEY)
-        if (payload.username !== foundUser) return res.sendStatus(403);
-        const accessToken = jwt.sign({ username: payload.username }, process.env.TOKEN_SECRET_KEY, { expiresIn: '3600s' })
+        const {username} = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET_KEY)
+        // console.log( "payload")
+        if (username !== foundUser) return res.sendStatus(403);
+        const accessToken = jwt.sign({ username: username }, process.env.TOKEN_SECRET_KEY, { expiresIn: '3600s' })
         res.json({ accessToken })
     }
     catch (error) {

@@ -15,6 +15,7 @@ const refreshRoute = require("./routes/refresh")
 const logoutRoute = require("./routes/logout");
 const userRoutes= require('./routes/user')
 const { getAllTweets } = require('./controllers/tweets');
+const { getUserProfile } = require('./controllers/user');
 
 
 
@@ -27,16 +28,18 @@ app.use(express.static('public'));
 app.use(express.json());
 
 // routes
-app.get('/', (req, res) => {
-  res.send('<h1>Jobs API</h1><a href="/api-docs">Documentation</a>');
-});
 
+app.use('/api/v1/user',authenticate,userRoutes)
 app.use('/api/v1/auth', authRoutes)
 app.use('/api/v1/refresh', refreshRoute)
 app.use('/api/v1/logout', logoutRoute)
+
 app.get('/api/v1/tweet', getAllTweets)
-app.get('api/v1/user',authenticate,userRoutes)
 app.use('/api/v1', authenticate, tweetRoutes);
+
+
+// app.get('api/v1/user/:id',getUserProfile)
+
 
 
 // app.use(notFound);

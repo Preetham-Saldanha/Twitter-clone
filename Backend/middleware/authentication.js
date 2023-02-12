@@ -5,8 +5,10 @@ const { StatusCodes } = require("http-status-codes")
 const auth = async (req, res, next) => {
 
     const authHeader = req.headers["authorization"]
+    // console.log(req.headers)
     if (!authHeader || !authHeader.startsWith("Bearer")) {
-        throw new Error("no token found",);
+        res.status(403).send("no token found");
+        return
     }
 
     const token = authHeader.split(' ')[1]
