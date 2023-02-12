@@ -37,7 +37,9 @@ export type profileDataType = {
     id: number;
     firstname: string;
     lastname: string;
-    bio:string
+    bio:string;
+    created_at:string;
+    location?:string
   
   }
 // {

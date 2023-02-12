@@ -2,6 +2,7 @@ const connectDB = require("../db/connect")
 const db = require("../db/connect")
 
 const handleLogoutOut = async (req, res) => {
+    console.log(req.cookies)
     const cookies = req.cookies;
     if (!cookies?.jwt) {
         return res.sendStatus(204)  // no content

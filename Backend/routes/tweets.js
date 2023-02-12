@@ -50,9 +50,9 @@ post((req, res, next) => {
         if (err) {
             console.log(err)
         }
-        
+        console.log("the files are twwet",req.files)    
     })
-    console.log("the files are",req.body)
+    // console.log("the files are",req.files)
 }, postTweet)
 
 
