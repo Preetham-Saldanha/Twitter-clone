@@ -31,6 +31,7 @@ function Login() {
                         
                     })
                     console.log("routing...")
+                    toast.dismiss()
                 }, 1200)
 
             }

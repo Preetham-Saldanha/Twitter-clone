@@ -15,6 +15,7 @@ function ProfileSection(props :{username : string}) {
 
   const { auth }: any = useAuth();
   const [selectedBar, setSelectedBar] = useState<number>(1)
+  const [isAnythingChanged, setIsAnythingChanged] = useState(true)
   const handleNavbarClick = (section: number) => {
     setSelectedBar(section)
   }
@@ -29,13 +30,15 @@ async function getUserDetails() {
   if (result) {
     console.log(result)
     setProfileData(result.user[0])
+    setIsAnythingChanged(false)
   }
 }
 
 
 useEffect(() => {
+  if(!enableEdit && isAnythingChanged)
   getUserDetails()
-}, [])
+}, [enableEdit])
 
 
 // useEffect(()=>{
@@ -51,7 +54,7 @@ useEffect(() => {
                 position="top-center"
                 reverseOrder={false}
             />
-  { enableEdit && <EditProfileModal enableEdit={enableEdit} setEnableEdit={setEnableEdit} {...profileData} setProfileData={setProfileData}></EditProfileModal>}
+  { enableEdit && <EditProfileModal isAnythingChanged={isAnythingChanged} setIsAnythingChanged={setIsAnythingChanged} enableEdit={enableEdit} setEnableEdit={setEnableEdit} {...profileData} setProfileData={setProfileData}></EditProfileModal>}
     <div className='col-span-7 lg:col-span-5 border-gray-100 border-x max-h-screen overflow-scroll scrollbar-hide h-screen'>
 
       <div className='flex mt-3' >
@@ -68,7 +71,8 @@ useEffect(() => {
         <div className='bg-slate-300 h-4/6 w-full'>
         </div>
         <div className=' flex relative bg-white h-32 w-32 ml-4 rounded-full -mt-16 justify-center items-center '>
-          <Image src={(profileData?.profile_image_path && profileData.profile_image_path!=="undefined")? `http://localhost:5000/profileImages/${profileData.profile_image_path}`: twitterLogo } alt="" height={100} width={100} />
+          {/* <Image src={(profileData?.profile_image_path && profileData.profile_image_path!=="undefined")? `http://localhost:5000/profileImages/${profileData.profile_image_path}`: twitterLogo } alt="" height={100} width={100} /> */}
+        {(profileData?.profile_image_path && profileData.profile_image_path!=="undefined") ? <img src={`http://localhost:5000/profileImages/${profileData.profile_image_path}`} className="rounded-full"/>: <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/ad/Placeholder_no_text.svg/768px-Placeholder_no_text.svg.png" className="rounded-full"/>}
         </div>
 
         <div className='flex w-full justify-end pr-5 '>
