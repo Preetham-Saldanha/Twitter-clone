@@ -10,26 +10,37 @@ function EditProfileModal(props) {
 
     const router = useRouter()
     const [firstname, setFirstName] = useState<string>(props?.firstname)
-    const [lastName, setLastName] = useState<string>(props?.lastname)
+    const [lastname, setLastName] = useState<string>(props?.lastname)
     const [bio, setBio] = useState<string>(props?.bio)
     const [location, setLocation] = useState<string>(props?.location)
     const [image, setImage] = useState<File>()
-
+    
     const [isSubmit, setIsSubmit] = useState<boolean>(false)
 
-    const imageUrl = (props.profile_image_path !== "undefined" || props.profile_image_path !== null) ? `http://localhost:5000/profileImages/${props.profile_image_path}` : "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ad/Placeholder_no_text.svg/768px-Placeholder_no_text.svg.png"
+    const imageUrl = (props.profile_image_path !== "undefined" && props.profile_image_path !== null) ? `http://localhost:5000/profileImages/${props.profile_image_path}` : "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ad/Placeholder_no_text.svg/768px-Placeholder_no_text.svg.png"
 
     const [imageUrlState, setImageUrlState] = useState(imageUrl)
-    const changeProfilePhoto: (photo: File) => void = (photo: File) => {
-        console.log(photo)
-        if (photo) {
-            setImage(photo)
-            setImageUrlState(URL.createObjectURL(photo))
+    const changeProfilePhoto: (photo: React.ChangeEvent<HTMLInputElement>) => void = (event: React.ChangeEvent<HTMLInputElement>) => {
+        event.preventDefault()
+        console.log(event.target.files[0])
+        if (event.target.files[0]) {
+            setImage(event.target.files[0])
+            setImageUrlState(URL.createObjectURL(event.target.files[0]))
+
         }
     }
 
+    function updateFlag() {
+        if (!props.isAnythingChanged) props.setIsAnythingChanged(true)
+    }
 
     const handleSubmit = () => {
+        
+        if (!props.isAnythingChanged) {
+            console.log("we are here")
+            props.setEnableEdit(false)
+            return
+        }
         toast.custom((t) => (
             <div
                 className={`${t.visible ? 'animate-enter' : 'animate-leave'
@@ -62,33 +73,42 @@ function EditProfileModal(props) {
         ))
     }
 
-    async function updateUser() {
+    async function updateUser(controller: AbortController) {
+        if (!props.isAnythingChanged) return
         const formData = new FormData()
         formData.append("firstname", firstname)
-        formData.append("lastname", lastName)
+        formData.append("lastname", lastname)
         formData.append("bio", bio)
+        formData.append("location", location)
         console.log(image, 'this is image')
         if (image !== undefined) {
             formData.append("image", image)
         }
-       
+
         formData.append("id", props.id)
         // for (let k of  formData.entries()){
         //     console.log(k)
         // }
 
-        
-          let axiosConfig = {
+
+        let axiosConfig = {
             headers: {
                 "Content-Type": "multipart/form-data",
                 // "Access-Control-Allow-Origin": "*",
-            }
+            },
+            signal: controller.signal
         };
-       
+
         try {
-            const result = await axiosPrivate.post("/api/v1/user/", formData,axiosConfig)
+            const result = await axiosPrivate.post("/api/v1/user/", formData, axiosConfig)
+            console.log("result is", result)
             if (result.data.message === "succesfully updated") {
                 toast.success("Updated your profile!")
+                // console.log(result.data.updatedDetails)
+                // const { firstname, lastname, bio, location, profile_image_path } = result.data.updatedDetails
+                // console.log(props.profileData)
+                // console.log({ ...props.profileData, firstname, lastname, bio, location, profile_image_path })
+                // props.setProfileData(prev =>{return { ...prev, firstname, lastname, bio, location, profile_image_path }})
             }
             props.setEnableEdit(prev => !prev)
             console.log(result)
@@ -114,11 +134,12 @@ function EditProfileModal(props) {
     }
 
     useEffect(() => {
-
+        const controller = new AbortController()
         if (isSubmit) {
-            updateUser()
+            updateUser(controller)
         }
 
+        return () => { controller.abort(); }
     }, [isSubmit])
     return (
         <>
@@ -140,7 +161,7 @@ function EditProfileModal(props) {
                             <div className='bg-slate-300 h-64 w-full'>
                             </div>
                             <label className=' flex  bg-white h-32 w-32 ml-4 rounded-full -mt-16 justify-center items-center z-50 p-0'>
-                                <input type="file" onChange={(e) => changeProfilePhoto(e.target.files[0])} className='opacity-0 hidden ' />
+                                <input type="file" onChange={(e) => { updateFlag(); changeProfilePhoto(e) }} className='opacity-0 hidden ' />
                                 {/* <div className=' flex relative bg-white h-32 w-32 ml-4 rounded-full -mt-16 justify-center items-center z-50 '> */}
                                 {/* <Image src={image ? URL.createObjectURL(image) : imageUrlState} alt="" height={100} width={100} className="rounded-full z-50 object-cover" /> */}
                                 {<img src={`${imageUrlState}`} className="rounded-full" />}
@@ -149,10 +170,10 @@ function EditProfileModal(props) {
                         </div>
 
                         <div className='px-3 flex-col space-y-3 pb-6'>
-                            <input type="text" className='border-gray-400 border rounded-md w-full h-10 p-3 text-gray-500' placeholder='firstname' value={firstname} onChange={(e) => { setFirstName(e.target.value) }} />
-                            <input type="text" className='border-gray-400 border rounded-md w-full h-10 p-3 text-gray-500 ' placeholder='lastname' value={lastName} onChange={(e) => { setLastName(e.target.value) }} />
-                            <textarea className='border-gray-400 border rounded-md w-full h-40 p-3 text-gray-500' placeholder='enter bio here' value={bio} onChange={(e) => { setBio(e.target.value) }} />
-                            <input type="text" className='border-gray-400 border rounded-md w-full h-10 p-3 text-gray-500' placeholder='location' value={location} onChange={(e) => { setLocation(e.target.value) }} />
+                            <input type="text" className='border-gray-400 border rounded-md w-full h-10 p-3 text-gray-500' placeholder='firstname' value={firstname} onChange={(e) => { updateFlag(); setFirstName(e.target.value) }} />
+                            <input type="text" className='border-gray-400 border rounded-md w-full h-10 p-3 text-gray-500 ' placeholder='lastname' value={lastname} onChange={(e) => { updateFlag(); setLastName(e.target.value) }} />
+                            <textarea className='border-gray-400 border rounded-md w-full h-40 p-3 text-gray-500' placeholder='enter bio here' value={bio} onChange={(e) => { updateFlag(); setBio(e.target.value) }} />
+                            <input type="text" className='border-gray-400 border rounded-md w-full h-10 p-3 text-gray-500' placeholder='location' value={location} onChange={(e) => { updateFlag(); setLocation(e.target.value) }} />
                         </div>
                     </form>
                 </div>

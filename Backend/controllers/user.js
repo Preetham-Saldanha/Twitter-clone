@@ -34,30 +34,37 @@ const updateUser = async (req, res) => {
         lastname,
         location, bio } = req.body
     const profile_image_path = req.file?.filename;
-console.log(id,firstname)
 
-    const [oldRow, oldFeilds] = await db.execute(`SELECT profile_image_path FROM users WHERE id="${id}"`)
-    console.log(oldRow)
-    if (oldRow && oldRow[0]?.profile_image_path!=='undefined' && oldRow[0].profile_image_path !== profile_image_path) {
-        // delete the old image in file system
-        // const directoryPath = __dirname +"../"+ "public/profileImages/";
-        const reqPath = path.join(__dirname, "../");
-        fs.unlink(reqPath + "/public/profileImages/" + profile_image_path, (err) => {
-            if (err) {
-                res.status(500).send({
-                    message: "Could not delete the file. " + err,
-                });
-            }
-        })
+    if (profile_image_path) {  // check if there is new image being sent
+
+        const [oldRow, oldFeilds] = await db.execute(`SELECT profile_image_path FROM users WHERE id="${id}"`)
+        console.log("this works", oldRow)
+        if (profile_image_path !== 'undefined' && oldRow && oldRow[0]?.profile_image_path !== 'undefined' && oldRow[0]?.profile_image_path !== profile_image_path) {
+            // delete the old image in file system
+           
+            const reqPath = path.join(__dirname, "../");
+
+            fs.unlink(reqPath + "/public/profileImages/" + oldRow[0].profile_image_path, (err) => {
+                if (err) {
+                    console.log("this is error", err)
+                    
+                    return
+                }
+            })
+
+        }
     }
-    const [row, feilds] = await db.execute(`UPDATE users SET firstname="${firstname}", lastname="${lastname}" , location="${location}",profile_image_path="${profile_image_path}" , bio ="${bio}" WHERE id="${id}"`)
-    res.status(StatusCodes.OK).json({ message: "succesfully updated" })
+   
+
+    const [row] = await db.execute((profile_image_path ) ? `UPDATE users SET firstname="${firstname}", lastname="${lastname}" , location="${location}",profile_image_path="${profile_image_path}" , bio ="${bio}" WHERE id="${id}"` : `UPDATE users SET firstname="${firstname}", lastname="${lastname}" , location="${location}" , bio ="${bio}" WHERE id="${id}"`)
+
+    if (row) res.status(StatusCodes.OK).json({ message: "succesfully updated" })
 }
 
 const getUserProfile = async (req, res) => {
     const username = req.params.id
     console.log(username, "username")
-  
+
     try {
         const [row] = await db.execute(`SELECT username,email,profile_image_path,followers,followers, following,id,firstname, lastname,bio,location, created_at FROM users WHERE username="${username}"`)
         // console.log("user", row)
