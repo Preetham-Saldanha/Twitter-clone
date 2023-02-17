@@ -36,7 +36,7 @@ export const getServerSideProps: GetServerSideProps = async () => {
     // const {auth, setAuth} : any = useAuth()
  
   
-        const data : Data =  (await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/tweet`)).data
+        const data : Data =  (await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/tweet/-1`)).data
         // axiosPrivate.defaults.headers.common['Authorization'] = `Bearer ${auth.accessToken}`
         // const data: Data = (await axiosPrivate.get(`/api/v1/tweet`)).data
         const tweets: Tweet[] = data.tweets;

@@ -34,7 +34,7 @@ app.use('/api/v1/auth', authRoutes)
 app.use('/api/v1/refresh', refreshRoute)
 app.use('/api/v1/logout', logoutRoute)
 
-app.get('/api/v1/tweet', getAllTweets)
+app.get('/api/v1/tweet/:id', getAllTweets)
 app.use('/api/v1', authenticate, tweetRoutes);
 
 

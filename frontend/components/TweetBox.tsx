@@ -60,7 +60,7 @@ function TweetBox({ setTweets }: Props) {
 
         // const tweets = await fetchTweets()
         // setTweets(tweets)
-        const data: Data = (await axiosPrivate.get(`/api/v1/tweet`)).data
+        const data: Data = (await axiosPrivate.get(`/api/v1/tweet/-1`)).data
         const newTweets: Tweet[] = data.tweets;
         setTweets(newTweets)
 
