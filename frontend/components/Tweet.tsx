@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { forwardRef } from 'react'
 import { ChatBubbleBottomCenterIcon, ArrowPathRoundedSquareIcon, HeartIcon, ChartBarIcon, ArrowUpTrayIcon } from '@heroicons/react/24/outline'
 // import { ScriptProps } from 'next/script'
 import { Tweet } from "../typings"
@@ -9,9 +9,9 @@ interface Props {
   tweet: Tweet
 }
 
-function Tweet({ tweet }: Props) {
+const Tweet = forwardRef(({ tweet }: Props, ref:React.MutableRefObject<HTMLDivElement>)=> {
   return (
-    <div className='flex space-x-2 py-3 border-gray-100 border-b hover:bg-slate-100'>
+    <div className='flex space-x-2 py-3 border-gray-100 border-b hover:bg-slate-100' ref={ref}>
       <div className=''>
         {!tweet.profileImg ? <img className='h-12 w-14 object-cover rounded-full' src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/ad/Placeholder_no_text.svg/768px-Placeholder_no_text.svg.png" alt="" />
           : <Image src={tweet.profileImg} alt="" />}
@@ -35,7 +35,7 @@ function Tweet({ tweet }: Props) {
         <div className='flex justify-between pr-3 md:w-96 '>
           <ChatBubbleBottomCenterIcon className='w-5 h-5 hover:text-twitter cursor-pointer' />
           <div className='flex items-center space-x-1 hover:text-twitter cursor-pointer'><ArrowPathRoundedSquareIcon className='w-5 h-5  ' /><p className='text-sm'>{tweet.retweet_count}</p></div>
-          <div className='flex items-center space-x-1 hover:text-twitter cursor-pointer'><HeartIcon className='w-5 h-5  ' /><p className='text-sm'>{tweet.favorite_count}</p></div>
+          <div className='flex items-center space-x-1 hover:text-twitter cursor-pointer'><HeartIcon className='w-5 h-5 ' /><p className='text-sm'>{tweet.favorite_count}</p></div>
           <ChartBarIcon className='w-5 h-5 hover:text-twitter cursor-pointer' />
           <ArrowUpTrayIcon className='w-5 h-5 hover:text-twitter cursor-pointer' />
         </div>
@@ -43,7 +43,7 @@ function Tweet({ tweet }: Props) {
 
     </div>
   )
-}
+})
 
 // {
 //   "tweet_id": 12,

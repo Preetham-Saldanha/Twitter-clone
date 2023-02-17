@@ -76,7 +76,7 @@ useEffect(() => {
         </div>
 
         <div className='flex w-full justify-end pr-5 '>
-          {props.username === auth.username ? <button onClick={()=>setEnableEdit(prev=>!prev)} className=' relative -mt-12 h-10 w-1/6 border-gray-500 font-semibold border rounded-3xl hover:bg-slate-500' >Edit Profile</button> : <button className=' relative -mt-12 h-10 w-1/6 bg-black font-semibold border rounded-3xl text-white'>Follow</button>}
+          {props.username === auth.username ? <button onClick={()=>setEnableEdit(prev=>!prev)} className=' relative -mt-12 h-10 w-1/6 border-gray-500 font-semibold border rounded-3xl hover:bg-slate-300' >Edit Profile</button> : <button className=' relative -mt-12 h-10 w-1/6 bg-black font-semibold border rounded-3xl text-white'>Follow</button>}
         </div>
       </div>
 

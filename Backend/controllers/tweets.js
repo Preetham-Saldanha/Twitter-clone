@@ -6,11 +6,24 @@ const Tweet = require("../Models/tweet")
 
 
 const getAllTweets = asyncWrapper(async (req, res) => {
+    const pagenumber = req.params.id;
+    const [count, feilds] = await db.execute(`SELECT COUNT(tweet_id) FROM tweets `)
+    console.log(count)
+    if (pagenumber === "-1") {
 
-    console.log(req.file)
-    const [rows, feilds] = await db.execute("SELECT * FROM `twitter-clone`.tweets ORDER BY created_at DESC")
-    res.status(StatusCodes.OK).json({ tweets: rows })
-    console.log("getAllTweets is printed")
+        const [rows, feilds] = await db.execute(`SELECT * FROM tweets ORDER BY created_at DESC LIMIT 10`)
+        console.log(rows)
+        res.status(StatusCodes.OK).json({ tweets: rows, count: count[0]['COUNT(tweet_id)'] })
+        console.log("getAllTweets is printed")
+
+    } else {
+
+        const [rows, feilds] = await db.execute(`SELECT * FROM tweets WHERE tweet_id < ${pagenumber}  ORDER BY created_at DESC LIMIT 10`)
+        console.log(rows)
+        res.status(StatusCodes.OK).json({ tweets: rows, count: count[0]['COUNT(tweet_id)'] })
+        console.log("pageinated ")
+    }
+
 
 })
 
