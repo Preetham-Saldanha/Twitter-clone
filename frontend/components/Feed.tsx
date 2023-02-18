@@ -45,6 +45,7 @@ function Feed({ tweets: tweetsProp }: Props) {
     observer.current = new IntersectionObserver(entries => {
       console.log(tweets.length, "tweets array size",hasMore)
       if (entries[0].isIntersecting  && tweets.length!==0 && hasMore) {
+        console.log("gi")
         setPageNumber(tweets[tweets.length-1]?.tweet_id)
       }
     })
@@ -104,7 +105,7 @@ function Feed({ tweets: tweetsProp }: Props) {
           <ArrowPathIcon onClick={refreshTweets} className='w-8 mr-5 mt-5 h-8 cursor-pointer transition-all duration-500  hover:rotate-180 active:scale-125 ease-out text-twitter ' />
 
         </div>}
-        <TweetBox setTweets={setTweets} />
+        <TweetBox setPageNumber={setPageNumber} />
 
         <div>
           {

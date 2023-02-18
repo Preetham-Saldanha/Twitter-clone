@@ -5,7 +5,7 @@ import { Tweet } from '../typings'
 
 type Data = {
     tweets: Tweet[],
-    count:number
+    count: number
 }
 function useTweetPaginaton({ pageNumber }: { pageNumber: number }) {
     const [newTweets, setNewTweets] = useState<Tweet[]>([])
@@ -15,19 +15,23 @@ function useTweetPaginaton({ pageNumber }: { pageNumber: number }) {
 
     const bringTweets = async () => {
         try {
-          console.log("pageNumber",pageNumber)
-            const data: Data = (await axios.get(`/api/v1/tweet/${pageNumber}`)).data
+            console.log("pageNumber", pageNumber)
+            const data: Data = (await axios.get(`/api/v1/tweet/${pageNumber===-2?-1:pageNumber}`)).data
             const tweets: Tweet[] = data.tweets;
             console.log(data.count, "count")
-            
-            setHasMore(data.count!==(newTweets.length+tweets.length))
-            const temp= [...newTweets]
-            for(let tweet of tweets){
-                temp.push(tweet)
+
+            setHasMore(data.count !== (newTweets.length + tweets.length))
+            if (pageNumber === -2) {
+                setNewTweets([...tweets])
             }
-            // const uniques= new Set([...newTweets, ...tweets])
-            setNewTweets([...temp])
-           
+            else {
+                const temp = [...newTweets]
+                for (let tweet of tweets) {
+                    temp.push(tweet)
+                }
+                // const uniques= new Set([...newTweets, ...tweets])
+                setNewTweets([...temp])
+            }
         } catch (err) {
             console.log(err);
             setError(true)

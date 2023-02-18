@@ -10,13 +10,14 @@ import toast from 'react-hot-toast'
 import { useRouter } from 'next/router'
 
 interface Props {
-    setTweets: Dispatch<React.SetStateAction<Tweet[]>>
+    // setTweets: Dispatch<React.SetStateAction<Tweet[]>>
+    setPageNumber:React.Dispatch<React.SetStateAction<number>>
 }
 type Data = {
     tweets: Tweet[]
 }
 
-function TweetBox({ setTweets }: Props) {
+function TweetBox({ setPageNumber }: Props) {
     const { auth }: any = useAuth()
     const [tweet, setTweet] = useState<string>('')
     const [image, setImage] = useState<File>()
@@ -60,9 +61,10 @@ function TweetBox({ setTweets }: Props) {
 
         // const tweets = await fetchTweets()
         // setTweets(tweets)
-        const data: Data = (await axiosPrivate.get(`/api/v1/tweet/-1`)).data
-        const newTweets: Tweet[] = data.tweets;
-        setTweets(newTweets)
+        // const data: Data = (await axiosPrivate.get(`/api/v1/tweet/-1`)).data
+        // const newTweets: Tweet[] = data.tweets;
+        // setTweets(newTweets)
+        setPageNumber(-2)
 
     }
     catch(error){
