@@ -7,7 +7,7 @@ type Data = {
     tweets: Tweet[],
     count: number
 }
-function useTweetPaginaton({ pageNumber }: { pageNumber: number }) {
+function useTweetPaginaton({ pageNumber , refreshFlag}: { pageNumber: number , refreshFlag: boolean}) {
     const [newTweets, setNewTweets] = useState<Tweet[]>([])
     const [loading, setLoading] = useState<boolean>(true)
     const [error, setError] = useState<boolean>(false)
@@ -16,12 +16,12 @@ function useTweetPaginaton({ pageNumber }: { pageNumber: number }) {
     const bringTweets = async () => {
         try {
             console.log("pageNumber", pageNumber)
-            const data: Data = (await axios.get(`/api/v1/tweet/${pageNumber===-2?-1:pageNumber}`)).data
+            const data: Data = (await axios.get(`/api/v1/tweet/${pageNumber}`)).data
             const tweets: Tweet[] = data.tweets;
             console.log(data.count, "count")
 
             setHasMore(data.count !== (newTweets.length + tweets.length))
-            if (pageNumber === -2) {
+            if (pageNumber === -1) {
                 setNewTweets([...tweets])
             }
             else {
@@ -44,7 +44,7 @@ function useTweetPaginaton({ pageNumber }: { pageNumber: number }) {
         setError(false)
         bringTweets()
         setLoading(false)
-    }, [pageNumber])
+    }, [pageNumber, refreshFlag])
 
     return { loading, error, hasMore, newTweets };
 

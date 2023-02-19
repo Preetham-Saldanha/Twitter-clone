@@ -10,10 +10,12 @@ export interface Tweet extends TweetBody{
 export type TweetBody= {
 tweet_text: string
 username:string
-profileImg?:string
+profile_image_path?:string
 tweet_image_path?:string
 retweet_count:number
 favorite_count:number
+firstname:string
+lastname:string
 }
 
 export type UserAuth= {

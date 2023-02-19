@@ -1,6 +1,6 @@
 const express = require("express")
 const router = express.Router()
-const { getAllTweets, postTweet, deleteTweet, updateTweet } = require("../controllers/tweets")
+const { getAllTweets, postTweet, deleteTweet, updateTweet, getRetweetAndLikeInfo } = require("../controllers/tweets")
 const multer = require('multer')
 const path = require('node:path');
 
@@ -56,6 +56,8 @@ post((req, res, next) => {
 }, postTweet)
 
 
-router.route('/tweet/:id').delete(deleteTweet).put(updateTweet)
+router.route('/tweet/:id').delete(deleteTweet).post(updateTweet)
+
+router.route('/retweetandlikeinfo').post(getRetweetAndLikeInfo)
 
 module.exports = router

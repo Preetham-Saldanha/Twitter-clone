@@ -29,6 +29,7 @@ const updateUser = async (req, res) => {
 
 
     const {
+        username,
         id,
         firstname,
         lastname,
@@ -37,28 +38,41 @@ const updateUser = async (req, res) => {
 
     if (profile_image_path) {  // check if there is new image being sent
 
+
+
         const [oldRow, oldFeilds] = await db.execute(`SELECT profile_image_path FROM users WHERE id="${id}"`)
         console.log("this works", oldRow)
         if (profile_image_path !== 'undefined' && oldRow && oldRow[0]?.profile_image_path !== 'undefined' && oldRow[0]?.profile_image_path !== profile_image_path) {
             // delete the old image in file system
-           
+
             const reqPath = path.join(__dirname, "../");
 
             fs.unlink(reqPath + "/public/profileImages/" + oldRow[0].profile_image_path, (err) => {
                 if (err) {
                     console.log("this is error", err)
-                    
+
                     return
                 }
             })
 
         }
     }
-   
 
-    const [row] = await db.execute((profile_image_path ) ? `UPDATE users SET firstname="${firstname}", lastname="${lastname}" , location="${location}",profile_image_path="${profile_image_path}" , bio ="${bio}" WHERE id="${id}"` : `UPDATE users SET firstname="${firstname}", lastname="${lastname}" , location="${location}" , bio ="${bio}" WHERE id="${id}"`)
+    if (profile_image_path) {
+        const [row] = await db.execute(`UPDATE users SET firstname="${firstname}", lastname="${lastname}" , location="${location}",profile_image_path="${profile_image_path}" , bio ="${bio}" WHERE id="${id}"`)
+        await db.execute(`UPDATE tweets SET profile_image_path="${profile_image_path}",firstname="${firstname}", lastname="${lastname}" WHERE username="${username}"`)
+        if (row) res.status(StatusCodes.OK).json({ message: "succesfully updated" })
 
-    if (row) res.status(StatusCodes.OK).json({ message: "succesfully updated" })
+    }
+    else {
+        const [row] = await db.execute(`UPDATE users SET firstname="${firstname}", lastname="${lastname}" , location="${location}" , bio ="${bio}" WHERE id="${id}"`)
+        await db.execute(`UPDATE tweets SET firstname="${firstname}", lastname="${lastname}" WHERE username="${username}"`)
+
+        if (row) res.status(StatusCodes.OK).json({ message: "succesfully updated" })
+
+    }
+
+
 }
 
 const getUserProfile = async (req, res) => {

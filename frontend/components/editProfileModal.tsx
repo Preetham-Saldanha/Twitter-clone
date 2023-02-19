@@ -80,6 +80,7 @@ function EditProfileModal(props) {
         formData.append("lastname", lastname)
         formData.append("bio", bio)
         formData.append("location", location)
+        formData.append("username", props.username)
         console.log(image, 'this is image')
         if (image !== undefined) {
             formData.append("image", image)

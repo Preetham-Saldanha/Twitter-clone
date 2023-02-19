@@ -33,24 +33,25 @@ function Feed({ tweets: tweetsProp }: Props) {
   const observer = useRef<null | IntersectionObserver>(null)
   const [pageNumber, setPageNumber] = useState<number>(-1)
   const [tweets, setTweets] = useState<Tweet[]>()
+  const [refreshFlag, setRefreshFlag] = useState<boolean>(true)
 
   const router = useRouter()
   const axiosPrivate = usePrivateAxios()
   const { auth, setAuth }: any = useAuth()
-  const { loading, error, hasMore, newTweets } = useTweetPaginaton({ pageNumber })
+  const { loading, error, hasMore, newTweets } = useTweetPaginaton({ pageNumber, refreshFlag })
 
   const lastTweetRef = useCallback(node => {
     if (loading) return
     if (observer.current) observer.current.disconnect();
     observer.current = new IntersectionObserver(entries => {
-      console.log(tweets.length, "tweets array size",hasMore)
-      if (entries[0].isIntersecting  && tweets.length!==0 && hasMore) {
+      // console.log(tweets.length, "tweets array size", hasMore)
+      if (entries[0].isIntersecting && tweets.length !== 0 && hasMore) {
         console.log("gi")
-        setPageNumber(tweets[tweets.length-1]?.tweet_id)
+        setPageNumber(tweets[tweets.length - 1]?.tweet_id)
       }
     })
     if (node) observer.current.observe(node)
-  }, [loading,tweets, hasMore])
+  }, [loading, tweets, hasMore])
 
 
 
@@ -93,7 +94,7 @@ function Feed({ tweets: tweetsProp }: Props) {
 
   useEffect(() => {
     setTweets(newTweets)
-  },[newTweets])
+  }, [newTweets])
 
   return (
     <>
@@ -105,7 +106,7 @@ function Feed({ tweets: tweetsProp }: Props) {
           <ArrowPathIcon onClick={refreshTweets} className='w-8 mr-5 mt-5 h-8 cursor-pointer transition-all duration-500  hover:rotate-180 active:scale-125 ease-out text-twitter ' />
 
         </div>}
-        <TweetBox setPageNumber={setPageNumber} />
+        <TweetBox setPageNumber={setPageNumber} setRefreshFlag={setRefreshFlag} />
 
         <div>
           {
