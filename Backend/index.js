@@ -98,6 +98,16 @@ const start = async () => {
     // FROM table2
     // WHERE table1.id = table2.id;
 
+  //  const query = `CREATE TABLE followers (
+  //     id INT AUTO_INCREMENT PRIMARY KEY,
+  //     follower VARCHAR(255) NOT NULL,
+  //     following VARCHAR(255) NOT NULL
+  //   )`;
+
+  //  const [row, feilds] = await db.execute(query)
+  //   console.log(row, feilds)
+
+  
   } catch (error) {
     console.log(error);
   }
