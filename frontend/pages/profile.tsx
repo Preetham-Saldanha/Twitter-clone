@@ -1,3 +1,4 @@
+import { useRouter } from 'next/router'
 import React, { useEffect, useState } from 'react'
 import { axiosPrivate } from '../api_utils/axios'
 import ProfileSection from '../components/ProfileSection'
@@ -10,6 +11,10 @@ function Profile() {
 
   const { auth }: any = useAuth()
   const [profileData, setProfileData] = useState<profileDataType>()
+  const router = useRouter()
+
+  const name: string | string[] = router.query?.username ? router.query.username : auth.username
+  // const [user, setUser] = useState<string | string[]>(name)
   // async function getUserDetails() {
   //   const result : profileDataType= await axiosPrivate.get(`/api/v1/user/${auth.username}`)
   //   if (result) {
@@ -24,9 +29,9 @@ function Profile() {
 
   return (
     <div className='grid grid-cols-9  font-roboto  lg:max-w-6xl mx-auto'>
-      <SideBar row={5} />
+      <SideBar row={auth?.username === name ? 5 : -1} />
 
-      <ProfileSection username={auth.username}/>
+      <ProfileSection username={name} />
 
       <Widget /></div>
   )
