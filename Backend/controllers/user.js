@@ -1,7 +1,8 @@
 const fs = require("fs");
 const path = require('path')
 const { StatusCodes } = require("http-status-codes")
-const db = require("../db/connect")
+const db = require("../db/connect");
+const asyncWrapper = require("../middleware/asyncWrapper");
 
 const removeProfileImage = () => {
 
@@ -91,5 +92,19 @@ const getUserProfile = async (req, res) => {
     }
 }
 
+const addFollower = asyncWrapper(async (req, res, next) => {
+    const { follower, following } = req.body;
 
-module.exports = { removeProfileImage, updateUser, getUserProfile }
+    const [row] = await db.execute(`INSERT INTO followers (follower, following) VALUES ("${follower}","${following}")`)
+    res.status(StatusCodes.OK).json({ "message": 'success' })
+}
+)
+
+const unFollow = asyncWrapper(async(req, res, next) =>{
+    const { follower, following } = req.body;
+    const [row] = await db.execute(`DELETE FROM followers WHERE follower="${follower}" AND following="${following}" `)
+
+    res.status(StatusCodes.OK).json({ "message": 'success' })
+})
+
+module.exports = { removeProfileImage, updateUser, getUserProfile , addFollower, unFollow}
