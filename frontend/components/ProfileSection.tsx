@@ -8,12 +8,14 @@ import axios, { axiosPrivate } from '../api_utils/axios'
 import EditProfileModal from './editProfileModal'
 import { Toaster } from 'react-hot-toast'
 import TimeAgo from 'timeago-react'
+import { useRouter } from 'next/router'
 
 
 
-function ProfileSection(props :{username : string}) {
+function ProfileSection(props :{username : string | string[]}) {
 
   const { auth }: any = useAuth();
+  const router = useRouter()
   const [selectedBar, setSelectedBar] = useState<number>(1)
   const [isAnythingChanged, setIsAnythingChanged] = useState(true)
   const handleNavbarClick = (section: number) => {
@@ -59,7 +61,7 @@ useEffect(() => {
 
       <div className='flex mt-3' >
 
-        <div className='px-3'><ArrowLeftIcon className='h-6 w-6' /></div>
+        <div className='px-3' onClick={()=>router.back()}><ArrowLeftIcon className='h-6 w-6' /></div>
         <div>
           {/* <p>{props.firstname} {props.lastname}</p> */}
           <p className='font-bold'>{profileData?.firstname} {profileData?.lastname}</p>

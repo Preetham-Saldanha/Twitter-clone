@@ -7,6 +7,7 @@ import TimeAgo from 'timeago-react'
 import Image from 'next/image'
 import { axiosPrivate } from '../api_utils/axios'
 import useAuth from '../hooks/useAuth'
+import { useRouter } from 'next/router'
 
 interface Props {
   tweet: Tweet
@@ -16,15 +17,14 @@ interface Props {
 
 const Tweet = forwardRef(({ tweet }: Props, ref: React.MutableRefObject<HTMLDivElement>) => {
   const { auth }: any = useAuth()
-  // console.log(auth.username)
+  const router = useRouter()
   const [isRetweet, setRetweet] = useState<boolean>(false)
   const [isLike, setLike] = useState<boolean>(false)
 
   const [likeCount, setLikeCount] = useState<number>(tweet.favorite_count);
   const [retweetCount, setRetweetCount] = useState<number>(tweet.retweet_count);
-// console.log(tweet,"tweetInfo")
+
   const updateTweet = async (action) => {
-    // const query = `/api/v1/tweet/${tweet.tweet_id}?retweet_count=${action === "like" ? 0 : 1}&favorite_count=${action === "like" ? 1 : 0}`
 
     let rt_flag = 1;
     let ft_flag = 1;
@@ -69,7 +69,7 @@ const Tweet = forwardRef(({ tweet }: Props, ref: React.MutableRefObject<HTMLDivE
   const checkTweetBodyData = async () => {
     try {
       let axiosConfig = { headers: { 'Content-Type': 'application/json;charset=UTF-8' } }
-      const {result } :{ result:{ likeInfo: boolean, retweetInfo: boolean }} = await (await axiosPrivate.post(`api/v1/retweetandlikeinfo`, { username: auth?.username, tweet_id: tweet.tweet_id }, axiosConfig)).data
+      const { result }: { result: { likeInfo: boolean, retweetInfo: boolean } } = await (await axiosPrivate.post(`api/v1/retweetandlikeinfo`, { username: auth?.username, tweet_id: tweet.tweet_id }, axiosConfig)).data
       console.log("result", result.likeInfo)
       if (result) {
         console.log("look", result["likeInfo"])
@@ -81,21 +81,25 @@ const Tweet = forwardRef(({ tweet }: Props, ref: React.MutableRefObject<HTMLDivE
     }
   }
 
+  const openProfile = () => {
+    router.push({ pathname: "/profile", query: {username:tweet.username} })
+  }
+
   useEffect(() => {
     checkTweetBodyData()
-    if(isLike)console.log("helloo",isLike)
+    if (isLike) console.log("helloo", isLike)
   }, [])
 
 
   return (
     <div className='flex space-x-2 py-3 border-gray-100 border-b hover:bg-slate-100' ref={ref}>
-      <div className=''>
+      <div className='' onClick={openProfile}>
         {!tweet.profile_image_path ? <img className='h-12 w-14 object-cover rounded-full' src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/ad/Placeholder_no_text.svg/768px-Placeholder_no_text.svg.png" alt="" />
           : <img src={`http://localhost:5000/profileImages/${tweet.profile_image_path}`} alt="" className='h-12 w-14 object-cover rounded-full' />}
       </div>
 
       <div className='flex-col space-y-3 w-full'>
-        <div className='flex space-x-2  '>
+        <div className='flex space-x-2' onClick={openProfile}>
           <p className='font-semibold'>{tweet.firstname} {tweet.lastname}</p>
           <p >@{tweet.username}</p>
           <TimeAgo className='text-sm pt-0.5'
