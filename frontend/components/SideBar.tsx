@@ -77,7 +77,7 @@ function SideBar(props: Props) {
 
       <SideBarRow Icon={activeRow === 1 ? solidHomeIcon : HomeIcon} title={"Home"} handleActive={handleActive} rowNumber={1} activeRow={activeRow} />
       {/* <SideBarRow Icon={HashtagIcon} title={"Explore"} /> */}
-      {auth.username !== "" &&
+      {auth?.username !== "" &&
         <>
           <SideBarRow Icon={activeRow === 2 ? SolidBellIcon : BellIcon} title={"Notification"} handleActive={handleActive} rowNumber={2} activeRow={activeRow} />
 
@@ -85,7 +85,7 @@ function SideBar(props: Props) {
           {/* <SideBarRow Icon={BookmarkIcon} title={""} /> */}
           <SideBarRow Icon={activeRow === 3 ? solidQueueListIcon : QueueListIcon} title={"lists"} handleActive={handleActive} rowNumber={3} activeRow={activeRow} />
           <SideBarRow Icon={activeRow === 4 ? solidBookmarkIcon : BookmarkIcon} title={"Bookmarks"} handleActive={handleActive} rowNumber={4} activeRow={activeRow} />
-          <SideBarRow Icon={activeRow === 5 ? solidUserIcon : UserIcon} title={auth.username === "" ? "Sign in" : "Profile"}  handleActive={handleActive} rowNumber={5} activeRow={activeRow} />
+          <SideBarRow Icon={activeRow === 5 ? solidUserIcon : UserIcon} title={auth?.username === "" ? "Sign in" : "Profile"}  handleActive={handleActive} rowNumber={5} activeRow={activeRow} />
           <SideBarRow Icon={activeRow === 6 ? solidArrowLeftOnRectangleIcon : ArrowLeftOnRectangleIcon} title={"Log out"}  rowNumber={6} activeRow={activeRow} logOut={logOut} />
         </>
       }  </div>

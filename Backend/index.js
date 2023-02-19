@@ -13,7 +13,7 @@ const authRoutes = require("./routes/auth")
 
 const refreshRoute = require("./routes/refresh")
 const logoutRoute = require("./routes/logout");
-const userRoutes= require('./routes/user')
+const userRoutes = require('./routes/user')
 const { getAllTweets } = require('./controllers/tweets');
 const { getUserProfile } = require('./controllers/user');
 
@@ -29,7 +29,7 @@ app.use(express.json());
 
 // routes
 
-app.use('/api/v1/user',authenticate,userRoutes)
+app.use('/api/v1/user', authenticate, userRoutes)
 app.use('/api/v1/auth', authRoutes)
 app.use('/api/v1/refresh', refreshRoute)
 app.use('/api/v1/logout', logoutRoute)
@@ -62,6 +62,20 @@ const start = async () => {
     //       followers INT DEFAULT 0,
     //       following INT DEFAULT 0
     //     );
+
+    // const query =`CREATE TABLE retweets (
+    //   id INT AUTO_INCREMENT PRIMARY KEY,
+    //   username VARCHAR(255) NOT NULL,
+    //   tweet_id INT NOT NULL
+    // )`
+    // const query =`CREATE TABLE likes (
+    //   id INT AUTO_INCREMENT PRIMARY KEY,
+    //   username VARCHAR(255) NOT NULL,
+    //   tweet_id INT NOT NULL
+    // )`
+
+  // const query = `ALTER TABLE tweets ADD reply_to varchar(255)  DEFAULT "-1"`
+  
     // const query = `ALTER TABLE users,
     // ADD firstname varchar(255),
     // ADD lastname varchar(255);`
@@ -79,10 +93,10 @@ const start = async () => {
     // console.log(row, feilds)
 
 
-//     UPDATE table1
-// SET firstname = table2.firstname, lastname = table2.lastname
-// FROM table2
-// WHERE table1.id = table2.id;
+    //     UPDATE table1
+    // SET firstname = table2.firstname, lastname = table2.lastname
+    // FROM table2
+    // WHERE table1.id = table2.id;
 
   } catch (error) {
     console.log(error);

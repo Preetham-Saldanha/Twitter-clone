@@ -11,14 +11,16 @@ import { useRouter } from 'next/router'
 
 interface Props {
     // setTweets: Dispatch<React.SetStateAction<Tweet[]>>
-    setPageNumber:React.Dispatch<React.SetStateAction<number>>
+    setPageNumber: React.Dispatch<React.SetStateAction<number>>,
+    setRefreshFlag: React.Dispatch<React.SetStateAction<boolean>>
 }
 type Data = {
     tweets: Tweet[]
 }
 
-function TweetBox({ setPageNumber }: Props) {
+function TweetBox({ setPageNumber, setRefreshFlag }: Props) {
     const { auth }: any = useAuth()
+    console.log(auth, 'auth')
     const [tweet, setTweet] = useState<string>('')
     const [image, setImage] = useState<File>()
     const [isImageBoxOpen, setImageBoxOpen] = useState<boolean>(false)
@@ -40,6 +42,25 @@ function TweetBox({ setPageNumber }: Props) {
         e.preventDefault()
         const formData = new FormData()
         const username = auth.username
+        if (auth.profile_image_path && auth.profile_image_path !== "undefined") {
+            formData.append("profile_image_path", auth.profile_image_path)
+        } else {
+            formData.append("profile_image_path", undefined)
+        }
+
+        if (auth.firstname && auth.firstname !== "undefined") {
+            formData.append("firstname", auth.firstname)
+        } else {
+            formData.append("firstname", "")
+        }
+
+        if (auth.lastname && auth.lastname !== "undefined") {
+            formData.append("lastname", auth.lastname)
+        } else {
+            formData.append("lastname", "")
+        }
+
+
         formData.append("username", username)
         if (image !== undefined) formData.append("image", image)
         formData.append("tweet_text", tweet)
@@ -50,39 +71,40 @@ function TweetBox({ setPageNumber }: Props) {
         //         "Access-Control-Allow-Origin": "*",
         //     }
         // };
-      try{
-        // const res = await axiosPrivate.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/tweet`, formData)
-        const res = await axiosPrivate.post(`/api/v1/tweet`, formData, {
-            headers: { "Content-Type": "multipart/form-data" }
-        })
-        setTweet('')
-        setImage(undefined)
-        console.log(res)
+        try {
+            // const res = await axiosPrivate.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/tweet`, formData)
+            const res = await axiosPrivate.post(`/api/v1/tweet`, formData, {
+                headers: { "Content-Type": "multipart/form-data" }
+            })
+            setTweet('')
+            setImage(undefined)
+            console.log(res)
 
-        // const tweets = await fetchTweets()
-        // setTweets(tweets)
-        // const data: Data = (await axiosPrivate.get(`/api/v1/tweet/-1`)).data
-        // const newTweets: Tweet[] = data.tweets;
-        // setTweets(newTweets)
-        setPageNumber(-2)
+            // const tweets = await fetchTweets()
+            // setTweets(tweets)
+            // const data: Data = (await axiosPrivate.get(`/api/v1/tweet/-1`)).data
+            // const newTweets: Tweet[] = data.tweets;
+            // setTweets(newTweets)
+            setPageNumber(-1)
+            setRefreshFlag(prev => !prev)
+        }
+        catch (error) {
+            if (error.response && error.response.data) {
+                toast.error(error?.response.data)
 
-    }
-    catch(error){
-        if (error.response && error.response.data) {
-            toast.error(error?.response.data)
-
-            if(error?.response?.data==="log in again!"){
-                setTimeout(() => {
-                    router.replace({
-                        pathname: "/login",      
-                    },) })
+                if (error?.response?.data === "log in again!") {
+                    setTimeout(() => {
+                        router.replace({
+                            pathname: "/login",
+                        },)
+                    })
+                }
             }
+            else {
+                toast.error(error.message)
+            }
+
         }
-        else {
-            toast.error(error.message)
-        }
-        
-    }
 
     }
 
@@ -93,10 +115,11 @@ function TweetBox({ setPageNumber }: Props) {
                 auth.username === "" ? <p className='p-4 w-2/3 mt-6 m-auto text-center font-semibold sm:text-3xl text-xl'>Welcome to Twitter!</p> :
                     <div className='flex space-x-2 mt-3 '  >
                         <div>
-                            <img className='h-14 w-14 rounded-full object-cover'
-                                src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/ad/Placeholder_no_text.svg/768px-Placeholder_no_text.svg.png"
-                                alt="" />
 
+                            {!auth.profile_image_path ? <img className='h-14 w-14 rounded-full object-cover'
+                                src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/ad/Placeholder_no_text.svg/768px-Placeholder_no_text.svg.png"
+                                alt="" /> :
+                                <img src={`http://localhost:5000/profileImages/${auth.profile_image_path}`} className='h-14 w-14 rounded-full object-cover' />}
                         </div>
 
 
