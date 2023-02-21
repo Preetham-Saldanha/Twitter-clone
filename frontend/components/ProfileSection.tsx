@@ -11,6 +11,7 @@ import TimeAgo from 'timeago-react'
 import { useRouter } from 'next/router'
 import useAddFollower from '../hooks/useAddFollower'
 import { useRemoveFollower } from '../hooks/useRemoveFollower'
+import ConfirmModal from './ConfirmModal'
 
 
 
@@ -25,7 +26,8 @@ function ProfileSection(props: { username: string | string[] }) {
   }
   const [enableEdit, setEnableEdit] = useState(false);
   const [isFollow, setIsFollow] = useState(false)
-
+  const [openConfirmModal, setOpenConfirmModal] = useState(false)
+  const [isSubmit, setIsSubmit] = useState<boolean>(false)
   const [profileData, setProfileData] = useState<profileDataType>();
 
 
@@ -45,7 +47,8 @@ function ProfileSection(props: { username: string | string[] }) {
 
   const handleFollow = () => {
     if (isFollow) {
-      removeFollowing(auth.username, profileData.username).then(data => setIsFollow(data))
+      setOpenConfirmModal(true)
+      // removeFollowing(auth.username, profileData.username).then(data => setIsFollow(data))
 
     } else {
       addFollowing(auth.username, profileData.username).then(data => setIsFollow(data))
@@ -54,10 +57,15 @@ function ProfileSection(props: { username: string | string[] }) {
   }
 
   useEffect(() => {
-    if (!enableEdit && isAnythingChanged)
+    if (!enableEdit && isAnythingChanged || profileData.username!==props.username)
       getUserDetails()
-  }, [enableEdit])
+  }, [enableEdit,props.username])
 
+  useEffect(() => {
+    if (isSubmit) {
+      removeFollowing(auth.username, profileData.username).then(data => setIsFollow(data))
+    }
+  }, [isSubmit])
 
   // useEffect(()=>{
   //   (async ()=>{
@@ -72,6 +80,7 @@ function ProfileSection(props: { username: string | string[] }) {
         position="top-center"
         reverseOrder={false}
       />
+      {openConfirmModal && <ConfirmModal setOpenConfirmModal={setOpenConfirmModal} setIsSubmit={setIsSubmit} message={"Are You sure you want to unFollow?"}/>}
       {enableEdit && <EditProfileModal isAnythingChanged={isAnythingChanged} setIsAnythingChanged={setIsAnythingChanged} enableEdit={enableEdit} setEnableEdit={setEnableEdit} {...profileData} setProfileData={setProfileData}></EditProfileModal>}
       <div className='col-span-7 lg:col-span-5 border-gray-100 border-x max-h-screen overflow-scroll scrollbar-hide h-screen'>
 

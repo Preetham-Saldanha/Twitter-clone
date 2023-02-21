@@ -10,6 +10,8 @@ import { useRouter } from 'next/router';
 import usePrivateAxios from '../hooks/usePrivateAxios'
 import useAuth from '../hooks/useAuth'
 import useTweetPaginaton from '../hooks/useTweetPaginaton'
+import ConfirmModal from './ConfirmModal'
+import CustomReplyModal from './CustomReplyModal'
 interface Props {
   tweets: Tweet[]
 }
@@ -39,6 +41,8 @@ function Feed({ tweets: tweetsProp }: Props) {
   const axiosPrivate = usePrivateAxios()
   const { auth, setAuth }: any = useAuth()
   const { loading, error, hasMore, newTweets } = useTweetPaginaton({ pageNumber, refreshFlag })
+
+  const [replyTweetData, setReplyTweetData] = useState<Tweet | null>(null)
 
   const lastTweetRef = useCallback(node => {
     if (loading) return
@@ -92,6 +96,10 @@ function Feed({ tweets: tweetsProp }: Props) {
   }
 
 
+  const handleReply = (tweet: Tweet) => {
+    setReplyTweetData(tweet)
+  }
+
   useEffect(() => {
     setTweets(newTweets)
   }, [newTweets])
@@ -100,7 +108,10 @@ function Feed({ tweets: tweetsProp }: Props) {
     <>
       <Toaster position="top-center"
         reverseOrder={false} />
-      <div className='col-span-7 lg:col-span-5 border-gray-100 border-x max-h-screen overflow-scroll scrollbar-hide '>
+
+      {replyTweetData && <CustomReplyModal setReplyTweetData={setReplyTweetData} setPageNumber={setPageNumber} setRefreshFlag={setRefreshFlag} reply_to={replyTweetData?.username} tweet={replyTweetData} />}
+
+      <div className='col-span-7  lg:col-span-5  border-gray-100 border-x max-h-screen overflow-scroll scrollbar-hide '>
         {auth.username && <div className='flex items-center justify-between '>
           <h1 className='p-5 pb-0 text-xl font-bold mt-2 '>Home</h1>
           <ArrowPathIcon onClick={refreshTweets} className='w-8 mr-5 mt-5 h-8 cursor-pointer transition-all duration-500  hover:rotate-180 active:scale-125 ease-out text-twitter ' />
@@ -112,9 +123,9 @@ function Feed({ tweets: tweetsProp }: Props) {
           {
             tweets && tweets.map(tweet => {
               if (tweet.tweet_id === tweets[tweets.length - 1].tweet_id) {
-                return <TweetComponent tweet={tweet} key={tweet.tweet_id} ref={lastTweetRef} />
+                return <TweetComponent tweet={tweet} key={tweet.tweet_id} ref={lastTweetRef} handleReply={handleReply}/>
               } else {
-                return <TweetComponent tweet={tweet} key={tweet.tweet_id} />
+                return <TweetComponent tweet={tweet} key={tweet.tweet_id} handleReply={handleReply}/>
               }
             }
             )

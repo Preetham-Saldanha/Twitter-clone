@@ -1,5 +1,5 @@
 import React, { forwardRef, useEffect, useState } from 'react'
-import { ChatBubbleBottomCenterIcon, ArrowPathRoundedSquareIcon, HeartIcon, ChartBarIcon, ArrowUpTrayIcon } from '@heroicons/react/24/outline'
+import { ChatBubbleBottomCenterIcon, ArrowPathRoundedSquareIcon, HeartIcon, ChartBarIcon, ArrowUpTrayIcon, EllipsisVerticalIcon } from '@heroicons/react/24/outline'
 import { HeartIcon as SolidHeartIcon } from '@heroicons/react/24/solid'
 // import { ScriptProps } from 'next/script'
 import { Tweet, UserAuth } from "../typings"
@@ -10,12 +10,14 @@ import useAuth from '../hooks/useAuth'
 import { useRouter } from 'next/router'
 
 interface Props {
-  tweet: Tweet
+  tweet: Tweet,
+  isInsideReplyModal?:boolean,
+  handleReply?:Function
 }
 
 
 
-const Tweet = forwardRef(({ tweet }: Props, ref: React.MutableRefObject<HTMLDivElement>) => {
+const Tweet = forwardRef(({ tweet, isInsideReplyModal , handleReply }: Props, ref: React.MutableRefObject<HTMLDivElement>) => {
   const { auth }: any = useAuth()
   const router = useRouter()
   const [isRetweet, setRetweet] = useState<boolean>(false)
@@ -23,6 +25,9 @@ const Tweet = forwardRef(({ tweet }: Props, ref: React.MutableRefObject<HTMLDivE
 
   const [likeCount, setLikeCount] = useState<number>(tweet.favorite_count);
   const [retweetCount, setRetweetCount] = useState<number>(tweet.retweet_count);
+
+  const viewValue = isInsideReplyModal?true:false
+  const [isPassedToReplyModal, setIsPassedToReplyModal] = useState(viewValue)
 
   const updateTweet = async (action) => {
 
@@ -82,12 +87,19 @@ const Tweet = forwardRef(({ tweet }: Props, ref: React.MutableRefObject<HTMLDivE
   }
 
   const openProfile = () => {
-    router.push({ pathname: "/profile", query: {username:tweet.username} })
+    if(!isPassedToReplyModal){
+    router.push({ pathname: "/profile", query: { username: tweet.username } })
+    }
+  }
+
+  const onCommentClick= ()=>{
+    handleReply(tweet)
   }
 
   useEffect(() => {
     checkTweetBodyData()
     if (isLike) console.log("helloo", isLike)
+    
   }, [])
 
 
@@ -98,30 +110,33 @@ const Tweet = forwardRef(({ tweet }: Props, ref: React.MutableRefObject<HTMLDivE
           : <img src={`http://localhost:5000/profileImages/${tweet.profile_image_path}`} alt="" className='h-12 w-14 object-cover rounded-full' />}
       </div>
 
-      <div className='flex-col space-y-3 w-full'>
-        <div className='flex space-x-2' onClick={openProfile}>
-          <p className='font-semibold'>{tweet.firstname} {tweet.lastname}</p>
+      <div className='flex-col space-y-3 w-full font-roboto '>
+        <div className='flex justify-between' onClick={openProfile}>
+          <div className='flex space-x-2 w-2/3'> <p className='font-semibold'>{tweet.firstname} {tweet.lastname}</p>
           <p >@{tweet.username}</p>
           <TimeAgo className='text-sm pt-0.5'
             datetime={tweet.created_at}
-
-          />
+          /></div>
+         
+          <div className=''><EllipsisVerticalIcon height={25} />
+          </div>
         </div>
+      {tweet.reply_to!=="-1" &&  <p className=' text-gray-500 relative -top-3 '>Replying to <span className='text-twitter font-roboto '>@{tweet.reply_to.split(" ")[0]}</span></p>}
 
         <div className='font-thin relative -top-2'>
           {tweet.tweet_text}
         </div>
 
-        {tweet.tweet_image_path && tweet.tweet_image_path !== "undefined" && <div className='w-full pr-14'><img className='w-full rounded-xl h-fit' src={`http://localhost:5000/tweetImages/${tweet.tweet_image_path}`} alt="" /></div>}
+        {tweet.tweet_image_path && tweet.tweet_image_path !== "undefined"  && !isInsideReplyModal && <div className='w-full pr-14'><img className='w-full rounded-xl h-fit' src={`http://localhost:5000/tweetImages/${tweet.tweet_image_path}`} alt="" /></div>}
 
-        <div className='flex justify-between pr-3 md:w-96 '>
-          <ChatBubbleBottomCenterIcon className='w-5 h-5 hover:text-twitter cursor-pointer' />
+     { !isPassedToReplyModal &&  <div className='flex justify-between pr-3 md:w-5/6 '>
+          <div onClick={onCommentClick}><ChatBubbleBottomCenterIcon className='w-5 h-5 hover:text-twitter cursor-pointer'  /></div>
           <div className='flex items-center space-x-1 hover:text-twitter cursor-pointer' onClick={() => { updateTweet("retweet") }}><ArrowPathRoundedSquareIcon className='w-5 h-5  ' color={isRetweet ? "#0db813" : "black"} /><p className='text-sm'>{retweetCount}</p></div>
           <div className='flex items-center space-x-1 hover:text-twitter cursor-pointer' onClick={() => { updateTweet("like") }}>{isLike ? <SolidHeartIcon className='w-5 h-5 ' color='#fc03df' /> : <HeartIcon className='w-5 h-5 ' />}<p className='text-sm'>{likeCount}</p></div>
           <ChartBarIcon className='w-5 h-5 hover:text-twitter cursor-pointer' />
           <ArrowUpTrayIcon className='w-5 h-5 hover:text-twitter cursor-pointer' />
           {/* <SolidHeartIcon/> */}
-        </div>
+        </div>}
       </div>
 
     </div>
