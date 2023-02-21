@@ -8,7 +8,7 @@ module.exports = {
         twitter:"#00ADED"
       },
       fontFamily:{
-        roboto:['Roboto', 'sans-serif']
+        roboto:[ 'sans-serif','Roboto']
       }
     },
   },

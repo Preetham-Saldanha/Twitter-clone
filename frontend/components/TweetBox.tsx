@@ -12,13 +12,15 @@ import { useRouter } from 'next/router'
 interface Props {
     // setTweets: Dispatch<React.SetStateAction<Tweet[]>>
     setPageNumber: React.Dispatch<React.SetStateAction<number>>,
-    setRefreshFlag: React.Dispatch<React.SetStateAction<boolean>>
+    setRefreshFlag: React.Dispatch<React.SetStateAction<boolean>>,
+    reply_to?: string,
+    closeModalBox?:React.Dispatch<React.SetStateAction<Tweet>>
 }
 type Data = {
     tweets: Tweet[]
 }
 
-function TweetBox({ setPageNumber, setRefreshFlag }: Props) {
+function TweetBox({ setPageNumber, setRefreshFlag, reply_to, closeModalBox }: Props) {
     const { auth }: any = useAuth()
     console.log(auth, 'auth')
     const [tweet, setTweet] = useState<string>('')
@@ -60,6 +62,13 @@ function TweetBox({ setPageNumber, setRefreshFlag }: Props) {
             formData.append("lastname", "")
         }
 
+        if (reply_to) {
+            formData.append("reply_to", reply_to)
+        }
+        else{
+            formData.append("reply_to", "-1")
+
+        }
 
         formData.append("username", username)
         if (image !== undefined) formData.append("image", image)
@@ -85,6 +94,7 @@ function TweetBox({ setPageNumber, setRefreshFlag }: Props) {
             // const data: Data = (await axiosPrivate.get(`/api/v1/tweet/-1`)).data
             // const newTweets: Tweet[] = data.tweets;
             // setTweets(newTweets)
+            closeModalBox(null) // this line closes the CustomReplyModal component by setting replyTweetData to null
             setPageNumber(-1)
             setRefreshFlag(prev => !prev)
         }
@@ -143,7 +153,7 @@ function TweetBox({ setPageNumber, setRefreshFlag }: Props) {
                                         <CalendarIcon className='h-5 w-5 text-twitter cursor-pointer transition-transform duration-150 hover:scale-125 ease-out' />
                                         <MapPinIcon className='h-5 w-5 text-twitter  cursor-pointer transition-transform duration-150 hover:scale-125 ease-out' />
                                     </div>
-                                    <button disabled={!tweet} className='bg-twitter text-white px-3 py-1 rounded-full mr-3 h-10 w-20 disabled:opacity-40' onClick={(e) => handleSubmit(e)}> tweet</button>
+                                    <button disabled={!tweet} className='bg-twitter text-white px-3 py-1 rounded-full mr-3 h-10 w-20 disabled:opacity-40' onClick={(e) => handleSubmit(e)}>{reply_to? "Reply" : "tweet"}</button>
                                 </div>
 
                             </form>

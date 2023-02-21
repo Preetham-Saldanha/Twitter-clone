@@ -6,6 +6,7 @@ import { toast } from 'react-hot-toast'
 import { axiosPrivate } from '../api_utils/axios'
 import { profileDataType } from '../typings'
 import { useRouter } from 'next/router'
+import ConfirmModal from './ConfirmModal'
 function EditProfileModal(props) {
 
     const router = useRouter()
@@ -14,7 +15,7 @@ function EditProfileModal(props) {
     const [bio, setBio] = useState<string>(props?.bio)
     const [location, setLocation] = useState<string>(props?.location)
     const [image, setImage] = useState<File>()
-    
+    const [openConfirmModal, setOpenConfirmModal] = useState(false)
     const [isSubmit, setIsSubmit] = useState<boolean>(false)
 
     const imageUrl = (props.profile_image_path !== "undefined" && props.profile_image_path !== null) ? `http://localhost:5000/profileImages/${props.profile_image_path}` : "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ad/Placeholder_no_text.svg/768px-Placeholder_no_text.svg.png"
@@ -35,42 +36,14 @@ function EditProfileModal(props) {
     }
 
     const handleSubmit = () => {
-        
+
         if (!props.isAnythingChanged) {
             console.log("we are here")
             props.setEnableEdit(false)
             return
         }
-        toast.custom((t) => (
-            <div
-                className={`${t.visible ? 'animate-enter' : 'animate-leave'
-                    } max-w-md w-full bg-white shadow-lg rounded-lg pointer-events-auto flex ring-1 ring-black ring-opacity-5`}
-            >
-                <div className="flex-1 w-0 p-4">
-                    <div className="flex items-start">
 
-                        <p>Do you want to save changes?</p>
-                    </div>
-                </div>
-                <div className="flex border-l border-gray-200">
-                    <button
-                        onClick={() => {
-                            toast.dismiss(t.id)
-                            setIsSubmit(true)
-                        }}
-                        className="w-full border border-transparent rounded-none rounded-r-lg p-4 flex items-center justify-center text-sm font-medium text-twitter hover:text-twitter focus: focus:outline-none focus:ring-2 focus:bg-twitter focus:text-white"
-                    >
-                        Yes
-                    </button>
-                    <button
-                        onClick={() => toast.dismiss(t.id)}
-                        className="w-full border border-transparent rounded-none rounded-r-lg p-4 flex items-center justify-center text-sm font-medium text-twitter hover:text-twitter focus: focus:outline-none focus:ring-2 focus:bg-twitter focus:text-white"
-                    >
-                        No
-                    </button>
-                </div>
-            </div>
-        ))
+        setOpenConfirmModal(true)
     }
 
     async function updateUser(controller: AbortController) {
@@ -145,7 +118,7 @@ function EditProfileModal(props) {
     return (
         <>
             {
-
+                openConfirmModal && <ConfirmModal setIsSubmit={setIsSubmit} setOpenConfirmModal={setOpenConfirmModal} message={"Save changes made?"}/>
             }  <div className=' absolute top-0 left-0 w-full h-full'>
                 <div className='absolute bg-gray-500 opacity-70 z-0 w-full h-full top-0 left-0' onClick={() => props.setEnableEdit(prev => !prev)}></div>
 

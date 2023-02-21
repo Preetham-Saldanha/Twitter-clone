@@ -31,11 +31,11 @@ const postTweet = asyncWrapper(async (req, res, next) => {
     console.log("adding tweet was attempted")
     console.log("files are", req.files)
     const tweet_image_path = req.file?.filename
-    const { username, tweet_text, firstname, lastname, profile_image_path } = req.body
+    const { username, tweet_text, firstname, lastname, profile_image_path ,reply_to} = req.body
     const date = new Date()
 
     const created_at = `${date.toISOString().slice(0, 10)} ${date.toTimeString().slice(0, 8)}`
-    const tweet = new Tweet(null, username, tweet_text, created_at, 0, 0, tweet_image_path , firstname, lastname, profile_image_path)
+    const tweet = new Tweet(null, username, tweet_text, created_at, 0, 0, tweet_image_path , firstname, lastname, profile_image_path, reply_to)
     const result = await tweet.Post()
 
     res.status(StatusCodes.OK).json(result)

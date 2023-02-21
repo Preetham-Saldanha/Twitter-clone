@@ -16,6 +16,7 @@ retweet_count:number
 favorite_count:number
 firstname:string
 lastname:string
+reply_to:string
 }
 
 export type UserAuth= {
