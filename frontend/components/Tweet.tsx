@@ -1,5 +1,5 @@
 import React, { forwardRef, useEffect, useState } from 'react'
-import { ChatBubbleBottomCenterIcon, ArrowPathRoundedSquareIcon, HeartIcon, ChartBarIcon, ArrowUpTrayIcon, EllipsisVerticalIcon } from '@heroicons/react/24/outline'
+import { ChatBubbleBottomCenterIcon, ArrowPathRoundedSquareIcon, HeartIcon, ChartBarIcon, ArrowUpTrayIcon, EllipsisVerticalIcon , UserIcon, BookmarkIcon} from '@heroicons/react/24/outline'
 import { HeartIcon as SolidHeartIcon } from '@heroicons/react/24/solid'
 // import { ScriptProps } from 'next/script'
 import { Tweet, UserAuth } from "../typings"
@@ -8,6 +8,9 @@ import Image from 'next/image'
 import { axiosPrivate } from '../api_utils/axios'
 import useAuth from '../hooks/useAuth'
 import { useRouter } from 'next/router'
+import CustomPopover from './CustomPopover'
+import { Popover } from '@mui/material'
+import Typography from '@mui/material/Typography'
 
 interface Props {
   tweet: Tweet,
@@ -28,6 +31,23 @@ const Tweet = forwardRef(({ tweet, isInsideReplyModal , handleReply }: Props, re
 
   const viewValue = isInsideReplyModal?true:false
   const [isPassedToReplyModal, setIsPassedToReplyModal] = useState(viewValue)
+
+  const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(null);
+
+  
+  const handleClick = (ct: HTMLButtonElement) => {
+    // ct.nextElementSibling
+    setAnchorEl(ct.nextElementSibling);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const open = Boolean(anchorEl);
+  const id = open ? 'simple-popover' : undefined;
+
+  // const [ isPopoverOpen, setIsPopoverOpen] = useState(false)
 
   const updateTweet = async (action) => {
 
@@ -104,22 +124,21 @@ const Tweet = forwardRef(({ tweet, isInsideReplyModal , handleReply }: Props, re
 
 
   return (
-    <div className='flex space-x-2 py-3 border-gray-100 border-b hover:bg-slate-100' ref={ref}>
+    <div >
+    <div className='flex space-x-2 py-3 border-gray-100 border-b hover:bg-gray-100 transition duration-200' ref={ref}>
       <div className='' onClick={openProfile}>
         {!tweet.profile_image_path ? <img className='h-12 w-14 object-cover rounded-full' src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/ad/Placeholder_no_text.svg/768px-Placeholder_no_text.svg.png" alt="" />
           : <img src={`http://localhost:5000/profileImages/${tweet.profile_image_path}`} alt="" className='h-12 w-14 object-cover rounded-full' />}
       </div>
 
       <div className='flex-col space-y-3 w-full font-roboto '>
-        <div className='flex justify-between' onClick={openProfile}>
-          <div className='flex space-x-2 w-2/3'> <p className='font-semibold'>{tweet.firstname} {tweet.lastname}</p>
+        <div className='flex justify-between' >
+          <div className='flex space-x-2 w-2/3' onClick={openProfile}> <p className='font-semibold'>{tweet.firstname} {tweet.lastname}</p>
           <p >@{tweet.username}</p>
           <TimeAgo className='text-sm pt-0.5'
             datetime={tweet.created_at}
           /></div>
-         
-          <div className=''><EllipsisVerticalIcon height={25} />
-          </div>
+
         </div>
       {tweet.reply_to!=="-1" &&  <p className=' text-gray-500 relative -top-3 '>Replying to <span className='text-twitter font-roboto '>@{tweet.reply_to.split(" ")[0]}</span></p>}
 
@@ -138,8 +157,42 @@ const Tweet = forwardRef(({ tweet, isInsideReplyModal , handleReply }: Props, re
           {/* <SolidHeartIcon/> */}
         </div>}
       </div>
+      {/* <CustomPopover/> */}
+      {/* <div className='hover:bg-slate-200 rounded-full p-1 h-fit ' onClick={()=>setIsPopoverOpen(true)}><EllipsisVerticalIcon height={25} />
+       </div> */}
+       <div className=''>
+ <button className='hover:bg-slate-200 rounded-full p-1 h-fit ' onClick={(e)=>handleClick(e.currentTarget)}><EllipsisVerticalIcon height={25} />
+       </button>
+       <button className='bg-slate-300 bottom-10 relative top-9'></button>
+       </div>
 
+       <Popover
+        id={id}
+        open={open}
+        anchorEl={anchorEl}
+        onClose={handleClose}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'left',
+        }}
+        transformOrigin={{
+          vertical: 'bottom',
+          horizontal: 'right',
+        }}
+      >
+
+        {/* MuiTypography-root */}
+        <Typography sx={{ p: 1 }}>
+          <p className=' hover:text-red-600 w-fit flex'> <UserIcon className='h-7'/> <span className='ml-3'>Unfollow Mr class</span></p>
+          <p className='  hover:text-red-600  w-fit flex'><BookmarkIcon className='h-7'/> <span className='ml-3'>Remove from bookmark.</span></p>
+          
+        </Typography>
+      </Popover>
     </div>
+       {/* { isPopoverOpen && <div className=''><div className='absolute h-full w-full  top-0 left-0 ' onClick={()=>setIsPopoverOpen(false)} > </div> <CustomPopover/></div>} */}
+
+       
+       </div>
   )
 })
 
