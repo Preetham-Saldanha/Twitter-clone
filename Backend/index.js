@@ -104,6 +104,8 @@ const start = async () => {
   //     following VARCHAR(255) NOT NULL
   //   )`;
 
+  // const query = `DELETE  FROM followers `
+
   //  const [row, feilds] = await db.execute(query)
   //   console.log(row, feilds)
 

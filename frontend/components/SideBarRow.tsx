@@ -6,14 +6,15 @@ interface Props {
   handleActive?: (row: number) => void, 
   rowNumber: number,
   activeRow :number,
-  logOut?: ()=>void
+  logOut?: ()=>void,
+ setOpenConfirmModal?: React.Dispatch<React.SetStateAction<boolean>>
 }
 
-function SideBarRow({ Icon, title, handleActive , rowNumber , activeRow, logOut}: Props) {
+function SideBarRow({ Icon, title, handleActive , rowNumber , activeRow, setOpenConfirmModal}: Props) {
 
 
   return (
-    <div className='flex space-x-2 px-3 py-4  max-w-fit rounded-full hover:bg-gray-100 transition-all duration-200 group cursor-pointer' onClick={logOut ? ()=>logOut():()=>handleActive(rowNumber)}>
+    <div className='flex space-x-2 px-3 py-4  max-w-fit rounded-full hover:bg-gray-100 transition-all duration-200 group cursor-pointer' onClick={setOpenConfirmModal ? ()=>setOpenConfirmModal(true):()=>handleActive(rowNumber)}>
       <Icon className='h-6 w-6' />
       { activeRow===rowNumber?
       <p className='group-hover:text-twitter hidden md:inline-flex text-base font-bold lg:text-xl'>{title}</p>

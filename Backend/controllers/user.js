@@ -96,6 +96,10 @@ const addFollower = asyncWrapper(async (req, res, next) => {
     const { follower, following } = req.body;
 
     const [row] = await db.execute(`INSERT INTO followers (follower, following) VALUES ("${follower}","${following}")`)
+    if(row){
+        await db.execute(`UPDATE users SET followers=followers + 1 WHERE username="${follower}"`) 
+        await db.execute(`UPDATE users SET following=following + 1 WHERE username="${following}"`)
+    }
     res.status(StatusCodes.OK).json({ "message": 'success' })
 }
 )
@@ -103,8 +107,17 @@ const addFollower = asyncWrapper(async (req, res, next) => {
 const unFollow = asyncWrapper(async(req, res, next) =>{
     const { follower, following } = req.body;
     const [row] = await db.execute(`DELETE FROM followers WHERE follower="${follower}" AND following="${following}" `)
-
+    if(row){
+        await db.execute(`UPDATE users SET followers=followers - 1 WHERE username="${follower}"`)
+        await db.execute(`UPDATE users SET following=following - 1 WHERE username="${following}"`)
+ 
+    }
     res.status(StatusCodes.OK).json({ "message": 'success' })
 })
+
+// const getFollowersForUser= asyncWrapper(async(req, res, next)=>{
+//     const {username} = req.body;
+//     const [row] = await db.execute(`SELECT `)
+// })
 
 module.exports = { removeProfileImage, updateUser, getUserProfile , addFollower, unFollow}

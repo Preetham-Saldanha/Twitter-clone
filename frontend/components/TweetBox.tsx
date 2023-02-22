@@ -182,4 +182,4 @@ function TweetBox({ setPageNumber, setRefreshFlag, reply_to, closeModalBox }: Pr
     )
 }
 
-export default TweetBox
+export default TweetBox;
