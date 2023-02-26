@@ -38,6 +38,8 @@ function SideBar(props: Props) {
   const [activeRow, setActiveRow] = useState(props.row)
   const [openConfirmModal, setOpenConfirmModal] = useState(false)
   const [isLogout, setIsLogout] = useState(false)
+  const [hasNotifications, setHasNotifications] = useState<boolean>(true)
+
   const handleActive: (row: number) => void = (row: number) => {
 
     // setActiveRow(row)
@@ -45,6 +47,7 @@ function SideBar(props: Props) {
       router.push("/home")
     }
     else if(row=== 2){
+      setHasNotifications(false)
       router.push("/notification")
     }
     else if (row === 5) {
@@ -56,6 +59,7 @@ function SideBar(props: Props) {
   }
 
   const logOut: () => void = async () => {
+
     try {
       const response = (await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/logout`))
       console.log(response, response.status)
@@ -72,6 +76,8 @@ function SideBar(props: Props) {
   }
 
   useEffect(()=>{
+  
+ 
     if(isLogout){
       logOut()
     }
@@ -94,7 +100,7 @@ function SideBar(props: Props) {
         {/* <SideBarRow Icon={HashtagIcon} title={"Explore"} /> */}
         {auth?.username !== "" &&
           <>
-            <SideBarRow Icon={activeRow === 2 ? SolidBellIcon : BellIcon} title={"Notifications"} handleActive={handleActive} rowNumber={2} activeRow={activeRow} />
+            <SideBarRow Icon={activeRow === 2 ? SolidBellIcon : BellIcon} title={"Notifications"} handleActive={handleActive} rowNumber={2} activeRow={activeRow} hasNotifications={hasNotifications}/>
 
             {/* <SideBarRow Icon={EnvelopeIcon} title={"messages"} /> */}
             {/* <SideBarRow Icon={BookmarkIcon} title={""} /> */}

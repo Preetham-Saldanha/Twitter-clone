@@ -12,6 +12,7 @@ import useAuth from '../hooks/useAuth'
 import useTweetPaginaton from '../hooks/useTweetPaginaton'
 import ConfirmModal from './ConfirmModal'
 import CustomReplyModal from './CustomReplyModal'
+import { createPortal } from 'react-dom'
 interface Props {
   tweets: Tweet[]
 }
@@ -44,14 +45,16 @@ function Feed({ tweets: tweetsProp }: Props) {
 
   const [replyTweetData, setReplyTweetData] = useState<Tweet | null>(null)
 
+  const [ showModal, setShowModal] = useState(false)
   const lastTweetRef = useCallback(node => {
     if (loading) return
     if (observer.current) observer.current.disconnect();
     observer.current = new IntersectionObserver(entries => {
       // console.log(tweets.length, "tweets array size", hasMore)
       if (entries[0].isIntersecting && tweets.length !== 0 && hasMore) {
-        console.log("gi")
+        console.log("gi",tweets[tweets.length - 1]?.tweet_id)
         setPageNumber(tweets[tweets.length - 1]?.tweet_id)
+        setRefreshFlag(prev => !prev)
       }
     })
     if (node) observer.current.observe(node)
@@ -95,7 +98,6 @@ function Feed({ tweets: tweetsProp }: Props) {
     }
   }
 
-
   const handleReply = (tweet: Tweet) => {
     setReplyTweetData(tweet)
   }
@@ -106,11 +108,15 @@ function Feed({ tweets: tweetsProp }: Props) {
 
   return (
     <>
+     {/* {showModal && createPortal(
+       <div className='m-auto w-1/2 h-1/2 bg-white shadow-md rounded-lg mt-10'>This has to display</div>,
+        document.body
+      )} */}
       <Toaster position="top-center"
         reverseOrder={false} />
 
       {replyTweetData && <CustomReplyModal setReplyTweetData={setReplyTweetData} setPageNumber={setPageNumber} setRefreshFlag={setRefreshFlag} reply_to={replyTweetData?.username} tweet={replyTweetData} />}
-
+{/* <button onClick={()=>setShowModal(prev=>!prev)}>Click me</button> */}
       <div className='col-span-7  lg:col-span-5  border-gray-100 border-x max-h-screen overflow-scroll scrollbar-hide '>
         {auth.username && <div className='flex items-center justify-between '>
           <h1 className='p-5 pb-0 text-xl font-bold mt-2 '>Home</h1>
