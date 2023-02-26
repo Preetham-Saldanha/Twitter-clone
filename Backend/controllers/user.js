@@ -3,7 +3,7 @@ const path = require('path')
 const { StatusCodes } = require("http-status-codes")
 const db = require("../db/connect");
 const asyncWrapper = require("../middleware/asyncWrapper");
-
+const Notification = require("../Models/notification")
 const removeProfileImage = () => {
 
     const { profile_image_path } = req.body
@@ -96,21 +96,30 @@ const addFollower = asyncWrapper(async (req, res, next) => {
     const { follower, following } = req.body;
 
     const [row] = await db.execute(`INSERT INTO followers (follower, following) VALUES ("${follower}","${following}")`)
-    if(row){
-        await db.execute(`UPDATE users SET followers=followers + 1 WHERE username="${follower}"`) 
+    if (row) {
+        await db.execute(`UPDATE users SET followers=followers + 1 WHERE username="${follower}"`)
         await db.execute(`UPDATE users SET following=following + 1 WHERE username="${following}"`)
+        await db.execute(`UPDATE tweetotherinfo SET following='${following}' WHERE follower='${follower}' AND tweet_id IN (SELECT tweet_id FROM tweets WHERE username='${following}')`)
     }
     res.status(StatusCodes.OK).json({ "message": 'success' })
+
+
+    // notification for following
+    if (row) {
+        const notification = new Notification();
+        notification.notifyOnFollow(following, follower, "-1")
+    }
 }
 )
 
-const unFollow = asyncWrapper(async(req, res, next) =>{
+const unFollow = asyncWrapper(async (req, res, next) => {
     const { follower, following } = req.body;
     const [row] = await db.execute(`DELETE FROM followers WHERE follower="${follower}" AND following="${following}" `)
-    if(row){
+    if (row) {
         await db.execute(`UPDATE users SET followers=followers - 1 WHERE username="${follower}"`)
         await db.execute(`UPDATE users SET following=following - 1 WHERE username="${following}"`)
- 
+        await db.execute(`UPDATE tweetotherinfo SET following="-1" WHERE follower="${follower}" AND following ="${following}"`)
+
     }
     res.status(StatusCodes.OK).json({ "message": 'success' })
 })
@@ -120,4 +129,4 @@ const unFollow = asyncWrapper(async(req, res, next) =>{
 //     const [row] = await db.execute(`SELECT `)
 // })
 
-module.exports = { removeProfileImage, updateUser, getUserProfile , addFollower, unFollow}
+module.exports = { removeProfileImage, updateUser, getUserProfile, addFollower, unFollow }

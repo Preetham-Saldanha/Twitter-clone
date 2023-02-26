@@ -25,6 +25,7 @@ const Tweet = forwardRef(({ tweet, isInsideReplyModal , handleReply }: Props, re
   const router = useRouter()
   const [isRetweet, setRetweet] = useState<boolean>(false)
   const [isLike, setLike] = useState<boolean>(false)
+  const [ isFollowing, setIsFollowing]= useState<boolean>(false)
 
   const [likeCount, setLikeCount] = useState<number>(tweet.favorite_count);
   const [retweetCount, setRetweetCount] = useState<number>(tweet.retweet_count);
@@ -32,7 +33,7 @@ const Tweet = forwardRef(({ tweet, isInsideReplyModal , handleReply }: Props, re
   const viewValue = isInsideReplyModal?true:false
   const [isPassedToReplyModal, setIsPassedToReplyModal] = useState(viewValue)
 
-  const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(null);
+  const [anchorEl, setAnchorEl] = React.useState<Element | null>(null);
 
   
   const handleClick = (ct: HTMLButtonElement) => {
@@ -57,18 +58,18 @@ const Tweet = forwardRef(({ tweet, isInsideReplyModal , handleReply }: Props, re
     if (action === "like") {
       if (isLike) {
         ft_flag = -1
-        setLikeCount(prev => prev - 1)
+        // setLikeCount(prev => prev - 1)
       } else {
-        setLikeCount(prev => prev + 1)
+        // setLikeCount(prev => prev + 1)
       }
       rt_flag = 0
     }
     else {
       if (isRetweet) {
         rt_flag = -1
-        setRetweetCount(prev => prev - 1)
+        // setRetweetCount(prev => prev - 1)
       } else {
-        setRetweetCount(prev => prev + 1)
+        // setRetweetCount(prev => prev + 1)
       }
       ft_flag = 0;
     }
@@ -79,27 +80,36 @@ const Tweet = forwardRef(({ tweet, isInsideReplyModal , handleReply }: Props, re
       const result = await axiosPrivate.post(`/api/v1/tweet/${tweet.tweet_id}?retweet_count=${rt_flag}&favorite_count=${ft_flag}&username=${auth.username}`,
         { username: auth.username })
 
+        if(result){
+        if  ( action === "like") {
+          const newLikeCount = isLike? likeCount-1 :likeCount+1
+          setLikeCount(newLikeCount)
+          setLike(prev => !prev)
+          
+        } else {
+          const newRetweetCount = isRetweet? retweetCount-1: retweetCount+1;
+          setRetweetCount(newRetweetCount)
+          setRetweet(prev => !prev)
+        }
+      }
     }
     catch (err) {
       console.log(err)
     }
-    if (action === "like") {
-      setLike(prev => !prev)
-    } else {
-      setRetweet(prev => !prev)
-    }
+  
 
   }
 
   const checkTweetBodyData = async () => {
     try {
       let axiosConfig = { headers: { 'Content-Type': 'application/json;charset=UTF-8' } }
-      const { result }: { result: { likeInfo: boolean, retweetInfo: boolean } } = await (await axiosPrivate.post(`api/v1/retweetandlikeinfo`, { username: auth?.username, tweet_id: tweet.tweet_id }, axiosConfig)).data
+      const { result }: { result: { likeInfo: boolean, retweetInfo: boolean , followingInfo: boolean} } = await (await axiosPrivate.post(`api/v1/retweetandlikeinfo`, { username: auth?.username, tweet_id: tweet.tweet_id }, axiosConfig)).data
       console.log("result", result.likeInfo)
       if (result) {
         console.log("look", result["likeInfo"])
         setLike(result.likeInfo)
         setRetweet(result.retweetInfo)
+        setIsFollowing(result.followingInfo)
       }
     } catch (err) {
       console.log(err)
@@ -183,8 +193,8 @@ const Tweet = forwardRef(({ tweet, isInsideReplyModal , handleReply }: Props, re
 
         {/* MuiTypography-root */}
         <Typography sx={{ p: 1 }}>
-          <p className=' hover:text-red-600 w-fit flex'> <UserIcon className='h-7'/> <span className='ml-3'>Unfollow Mr class</span></p>
-          <p className='  hover:text-red-600  w-fit flex'><BookmarkIcon className='h-7'/> <span className='ml-3'>Remove from bookmark.</span></p>
+        {auth.username !==tweet.username && (isFollowing? <p className=' hover:text-red-600 w-fit flex'> <UserIcon className='h-7'/> <span className='ml-3'>Unfollow @{tweet.username}</span></p> :<p className=' w-fit flex'> <UserIcon className='h-7'/> <span className='ml-3'>follow @{tweet.username}</span></p>)}
+          <p className=' w-fit flex'><BookmarkIcon className='h-7'/> <span className='ml-3'>Add/Remove from bookmark.</span></p>
           
         </Typography>
       </Popover>

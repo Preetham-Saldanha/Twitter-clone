@@ -19,11 +19,16 @@ class Tweet {
 
 
     async Post() {
+        try{
         const query = `INSERT INTO tweets (username, tweet_text, created_at, retweet_count, favorite_count,tweet_image_path, firstname, lastname, profile_image_path, reply_to) VALUES ("${this.username}", "${this.tweet_text}", "${this.created_at}","${this.retweet_count}", "${this.favorite_count}", "${this.tweet_image_path}", "${this.firstname}", "${this.lastname}", "${this.profile_image_path}","${this.reply_to}")`;
         // const values = [[this.tweet_id, this.username, this.tweet_text, this.created_at, this.retweet_count, this.tweet_image_path]]
         const result = await db.execute(query);
         console.log(result)
         return result;
+        }
+        catch(error){
+            console.log(error)
+        }
 
     }
 

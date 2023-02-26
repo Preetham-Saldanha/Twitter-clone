@@ -13,7 +13,8 @@ const authRoutes = require("./routes/auth")
 
 const refreshRoute = require("./routes/refresh")
 const logoutRoute = require("./routes/logout");
-const userRoutes = require('./routes/user')
+const userRoutes = require('./routes/user');
+const notificationsRoutes = require("./routes/notifications")
 const { getAllTweets } = require('./controllers/tweets');
 const { getUserProfile } = require('./controllers/user');
 
@@ -33,6 +34,7 @@ app.use('/api/v1/user', authenticate, userRoutes)
 app.use('/api/v1/auth', authRoutes)
 app.use('/api/v1/refresh', refreshRoute)
 app.use('/api/v1/logout', logoutRoute)
+app.use('/api/v1/notification', authenticate, notificationsRoutes);
 
 app.get('/api/v1/tweet/:id', getAllTweets)
 app.use('/api/v1', authenticate, tweetRoutes);
@@ -74,8 +76,8 @@ const start = async () => {
     //   tweet_id INT NOT NULL
     // )`
 
-  // const query = `ALTER TABLE tweets ADD reply_to varchar(255)  DEFAULT "-1"`
-  
+    // const query = `ALTER TABLE tweets ADD reply_to varchar(255)  DEFAULT "-1"`
+
     // const query = `ALTER TABLE users,
     // ADD firstname varchar(255),
     // ADD lastname varchar(255);`
@@ -98,18 +100,27 @@ const start = async () => {
     // FROM table2
     // WHERE table1.id = table2.id;
 
-  //  const query = `CREATE TABLE followers (
-  //     id INT AUTO_INCREMENT PRIMARY KEY,
-  //     follower VARCHAR(255) NOT NULL,
-  //     following VARCHAR(255) NOT NULL
-  //   )`;
+    //  const query = `CREATE TABLE followers (
+    //     id INT AUTO_INCREMENT PRIMARY KEY,
+    //     follower VARCHAR(255) NOT NULL,
+    //     following VARCHAR(255) NOT NULL
+    //   )`;
 
-  // const query = `DELETE  FROM followers `
+    // const query = `DELETE  FROM followers `
+    // const query = `CREATE TABLE tweetotherinfo ( follower VARCHAR(255), tweet_id INT, retweeted INT DEFAULT 0, liked INT DEFAULT 0, following VARCHAR(255) DEFAULT "-1")`
+    
+    // const query = ` UPDATE users SET followers= 0, following=0 `
+    
+    // const query = `DELETE  FROM notifications`
+    // const query = `DROP TABLE notifications`
 
-  //  const [row, feilds] = await db.execute(query)
-  //   console.log(row, feilds)
+    // const query = `CREATE TABLE notifications (id INT AUTO_INCREMENT PRIMARY KEY, celebrity VARCHAR(255), fan VARCHAR(255), profile_image_path VARCHAR(255) DEFAULT "-1", tweet_id INT DEFAULT -1, notify_type VARCHAR(30), has_read INT DEFAULT 0)`
+    // const [row, feilds] = await db.execute(query)
+    // console.log(row, feilds)
 
-  
+//     const query = `ALTER TABLE notifications ADD created_at DATETIME DEFAULT CURRENT_TIMESTAMP`
+//  const [row, feilds] = await db.execute(query)
+//     console.log(row, feilds)
   } catch (error) {
     console.log(error);
   }
