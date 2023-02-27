@@ -23,7 +23,7 @@ import SideBarRow from './SideBarRow'
 import twitterImage from '../public/Twitter_bird_logo.png'
 import Image from 'next/image'
 import useAuth from '../hooks/useAuth'
-import axios from '../api_utils/axios'
+import axios, { axiosPrivate } from '../api_utils/axios'
 import { toast } from 'react-hot-toast'
 import { useRouter } from 'next/router'
 import ConfirmModal from './ConfirmModal'
@@ -38,23 +38,23 @@ function SideBar(props: Props) {
   const [activeRow, setActiveRow] = useState(props.row)
   const [openConfirmModal, setOpenConfirmModal] = useState(false)
   const [isLogout, setIsLogout] = useState(false)
-  const [hasNotifications, setHasNotifications] = useState<boolean>(true)
-
+  // const [hasNotifications, setHasNotifications] = useState<boolean>(true)
+  const [numberOfNotifications, setNumberOfNotifications] = useState<number>(0)
   const handleActive: (row: number) => void = (row: number) => {
 
     // setActiveRow(row)
     if (row === 1) {
       router.push("/home")
     }
-    else if(row=== 2){
-      setHasNotifications(false)
+    else if (row === 2) {
+      // setHasNotifications(false)
       router.push("/notification")
     }
     else if (row === 5) {
       router.push("/profile")
     }
 
-    
+
 
   }
 
@@ -75,14 +75,33 @@ function SideBar(props: Props) {
     }
   }
 
-  useEffect(()=>{
-  
- 
-    if(isLogout){
+  const fetchNotifications = async () => {
+    const { result } = await (await axiosPrivate.post("/api/v1/notification/", { username: auth.username })).data;
+    console.log(result)
+    // setNotifications()
+    return result.length
+  }
+
+  useEffect(() => {
+
+
+    if (isLogout) {
       logOut()
     }
   }, [isLogout])
 
+  useEffect(() => {
+    const ID = setInterval(async () => {
+      const size = await fetchNotifications();
+
+  setNumberOfNotifications(size)
+
+      return clearInterval(ID)
+
+    }, 5000)
+
+
+  },[])
 
   return (
     <>
@@ -100,7 +119,7 @@ function SideBar(props: Props) {
         {/* <SideBarRow Icon={HashtagIcon} title={"Explore"} /> */}
         {auth?.username !== "" &&
           <>
-            <SideBarRow Icon={activeRow === 2 ? SolidBellIcon : BellIcon} title={"Notifications"} handleActive={handleActive} rowNumber={2} activeRow={activeRow} hasNotifications={hasNotifications}/>
+            <SideBarRow Icon={activeRow === 2 ? SolidBellIcon : BellIcon} title={"Notifications"} handleActive={handleActive} rowNumber={2} activeRow={activeRow} numberOfNotifications={numberOfNotifications} />
 
             {/* <SideBarRow Icon={EnvelopeIcon} title={"messages"} /> */}
             {/* <SideBarRow Icon={BookmarkIcon} title={""} /> */}

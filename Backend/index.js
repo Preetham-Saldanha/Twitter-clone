@@ -106,13 +106,13 @@ const start = async () => {
     //     following VARCHAR(255) NOT NULL
     //   )`;
 
-    // const query = `DELETE  FROM followers `
+    // const query = `DELETE  FROM tweetotherinfo `
     // const query = `CREATE TABLE tweetotherinfo ( follower VARCHAR(255), tweet_id INT, retweeted INT DEFAULT 0, liked INT DEFAULT 0, following VARCHAR(255) DEFAULT "-1")`
     
     // const query = ` UPDATE users SET followers= 0, following=0 `
+    // const query = ` UPDATE tweets SET favorite_count= 0, retweet_count=0  `
     
     // const query = `DELETE  FROM notifications`
-    // const query = `DROP TABLE notifications`
 
     // const query = `CREATE TABLE notifications (id INT AUTO_INCREMENT PRIMARY KEY, celebrity VARCHAR(255), fan VARCHAR(255), profile_image_path VARCHAR(255) DEFAULT "-1", tweet_id INT DEFAULT -1, notify_type VARCHAR(30), has_read INT DEFAULT 0)`
     // const [row, feilds] = await db.execute(query)
@@ -120,7 +120,7 @@ const start = async () => {
 
 //     const query = `ALTER TABLE notifications ADD created_at DATETIME DEFAULT CURRENT_TIMESTAMP`
 //  const [row, feilds] = await db.execute(query)
-//     console.log(row, feilds)
+//  console.log(row, feilds)
   } catch (error) {
     console.log(error);
   }

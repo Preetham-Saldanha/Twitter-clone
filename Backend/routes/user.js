@@ -3,8 +3,8 @@ const router = express.Router()
 // const { getAllTweets, postTweet, deleteTweet, updateTweet } = require("../controllers/tweets")
 const multer = require('multer')
 const path = require('node:path');
-const { removeProfileImage , updateUser, getUserProfile, addFollower, unFollow} = require("../controllers/user")
-
+const { removeProfileImage , updateUser, getUserProfile, addFollower, unFollow, is} = require("../controllers/user")
+const {isFollowing}= require("../controllers/tweets")
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -58,7 +58,7 @@ router.route('/follow').post(addFollower)
 
 router.route('/unfollow').post(unFollow)
 
-
+router.route('/isfollowing/:id').get(isFollowing)
 // router.route('/removeProfileImage').delete(removeProfileImage)
 
 module.exports = router
