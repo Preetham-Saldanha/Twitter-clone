@@ -91,7 +91,7 @@ const updateTweet = asyncWrapper(async (req, res, next) => {
     const [followingInfo] = await db.execute(`SELECT follower, following FROM followers WHERE follower='${username}' AND following='${values?.username}'`)
     const isInsert = tweetOtherRowData.length === 0 ? true : false
     const isFollowing = followingInfo.length !== 0 ? true : false
-    console.log("this count", values)
+    console.log("this count celebrity & fan", values[0].username, username)
     if (favorite_count === '1') {
         ft_count = values[0].favorite_count + 1;
         // await db.execute(`INSERT INTO likes (username,tweet_id) VALUES ('${username}', '${_id}')`)
@@ -124,7 +124,7 @@ const updateTweet = asyncWrapper(async (req, res, next) => {
 
 
     if (isInsert) {
-        await db.execute(`INSERT INTO tweetotherinfo (follower, tweet_id, retweeted, liked, following) VALUES ('${username}', '${_id}','${retweet_count !== '-1' ? retweet_count : 0}', '${favorite_count !== '-1' ? favorite_count : 0}','${isFollowing ? values.username : -1}')`)
+        await db.execute(`INSERT INTO tweetotherinfo (follower, tweet_id, retweeted, liked, following) VALUES ('${username}', '${_id}','${retweet_count !== '-1' ? retweet_count : 0}', '${favorite_count !== '-1' ? favorite_count : 0}','${isFollowing ? values[0].username : -1}')`)
 
     }
     else {
@@ -137,15 +137,16 @@ const updateTweet = asyncWrapper(async (req, res, next) => {
 
 
     // adding to notifications table ,notifying on retweeted or liked
-    if (isInsert && result) {
+ 
         const notification = new Notification()
-        if (retweet_count === 1) {
-            notification.notifyOnTweet(values.username, username, values.profile_image_path, _id, 'retweeted')
+        if (retweet_count === '1') {
+            notification.notifyOnTweet(values[0].username, username, values[0].profile_image_path, _id, 'retweeted')
         }
-        else if (favorite_count === 1) {
-            notification.notifyOnTweet(values.username, username, values.profile_image_path, _id, 'liked')
+        else if (favorite_count === '1') {
+            notification.notifyOnTweet(values[0].username, username, values[0].profile_image_path, _id, 'liked')
         }
-    }
+        console.log("reached here ", retweet_count, favorite_count)
+    
 
 })
 
@@ -160,6 +161,7 @@ const getRetweetAndLikeInfo = asyncWrapper(async (req, res, next) => {
         // res.status(StatusCodes.OK).json({ result: { likeInfo: likeInfo[0]?.username === username, retweetInfo: retweetInfo[0]?.username === username } })
 
         const [Info] = await db.execute(`SELECT * FROM tweetotherinfo WHERE follower="${username}" AND tweet_id="${tweet_id}"`)
+        console.log(Info, "users")
         if (Info.length !== 0) {
             res.status(StatusCodes.OK).json({ result: { likeInfo: Info[0]?.liked === 1, retweetInfo: Info[0]?.retweeted === 1, followingInfo: Info.following !== "-1" } })
         } else {
@@ -170,7 +172,21 @@ const getRetweetAndLikeInfo = asyncWrapper(async (req, res, next) => {
     else res.status(StatusCodes.OK).json({ result: { likeInfo: false, retweetInfo: false, followingInfo: false } })
 })
 
+const isFollowing = asyncWrapper(async(req, res, next)=>{
+    const following = req.params.id;
+    const follower= req.user.username
+
+    const [Info] = await db.execute(`SELECT * FROM followers WHERE follower="${follower}" AND following="${following}"`)
+    if(Info.length!==0){
+        res.status(StatusCodes.OK).json({result:true})
+    }
+    else{
+        res.status(StatusCodes.OK).json({result:false})
+
+    }
+    
+})
 
 
-module.exports = { getAllTweets, postTweet, deleteTweet, updateTweet, getRetweetAndLikeInfo }
+module.exports = { getAllTweets, postTweet, deleteTweet, updateTweet, getRetweetAndLikeInfo , isFollowing}
 

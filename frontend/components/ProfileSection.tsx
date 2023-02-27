@@ -42,6 +42,7 @@ function ProfileSection(props: { username: string | string[] }) {
       console.log(result)
       setProfileData(result.user[0])
       setIsAnythingChanged(false)
+      setIsFollow(result.user[0].isFollowing)
     }
   }
 
@@ -51,7 +52,7 @@ function ProfileSection(props: { username: string | string[] }) {
       // removeFollowing(auth.username, profileData.username).then(data => setIsFollow(data))
 
     } else {
-      addFollowing(auth.username, profileData.username).then(data => setIsFollow(data))
+      addFollowing(auth.username, profileData.username).then(data =>{ setIsFollow(data); setProfileData( {...profileData,followers:profileData.followers+1})})
     }
 
   }
@@ -63,7 +64,7 @@ function ProfileSection(props: { username: string | string[] }) {
 
   useEffect(() => {
     if (isSubmit) {
-      removeFollowing(auth.username, profileData.username).then(data => setIsFollow(data))
+      removeFollowing(auth.username, profileData.username).then(data =>{ setIsFollow(data); setProfileData({...profileData, followers: profileData.followers-1})})
     }
   }, [isSubmit])
 
@@ -103,8 +104,8 @@ function ProfileSection(props: { username: string | string[] }) {
           </div>
 
           <div className='flex w-full justify-end pr-5 '>
-            {props.username === auth.username ? <button onClick={() => setEnableEdit(prev => !prev)} className=' relative -mt-12 h-10 w-1/6 border-gray-500 font-semibold border rounded-3xl hover:bg-slate-300' >Edit Profile</button> :
-              <button className=' relative -mt-12 h-10 w-1/6 bg-black font-semibold border rounded-3xl text-white' onClick={handleFollow}>{isFollow ? "Following" : "Follow"}</button>}
+            {props.username === auth.username ? <button onClick={() => setEnableEdit(prev => !prev)} className=' relative -mt-12 h-10 w-1/6 border-gray-700 font-semibold border-2 rounded-3xl hover:bg-slate-100 duration-300' >Edit Profile</button> :
+              <button className={isFollow?' relative -mt-12 h-10 w-1/6 border-gray-600 font-semibold border-2 rounded-3xl hover:bg-slate-100  duration-300' :'relative -mt-12 h-10 w-1/6 bg-black font-semibold border rounded-3xl text-white hover:opacity-75'} onClick={handleFollow}>{isFollow ? "Following" : "Follow"}</button>}
           </div>
         </div>
 
@@ -112,7 +113,7 @@ function ProfileSection(props: { username: string | string[] }) {
           <p className='font-bold text-2xl leading-5'>{profileData?.firstname} {profileData?.lastname}</p>
           <p className=' text-gray-500 '> @{profileData?.username}</p>
           <p className=' text-gray-500 mt-3'> joined <TimeAgo datetime={profileData?.created_at} /></p>
-          <p className=' text-gray-500 mt-3'> <span className='text-black font-semibold'>{profileData?.followers}</span> follower <span className='text-black font-semibold'>{profileData?.following}</span> followed</p>
+          <p className=' text-gray-500 mt-3'> <span className='text-black font-semibold'>{profileData?.followers}</span> follower <span className='text-black font-semibold'>{profileData?.following}</span> following</p>
         </div>
 
         {/* navbar for profile */}

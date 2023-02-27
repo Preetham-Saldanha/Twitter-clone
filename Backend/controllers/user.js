@@ -3,7 +3,10 @@ const path = require('path')
 const { StatusCodes } = require("http-status-codes")
 const db = require("../db/connect");
 const asyncWrapper = require("../middleware/asyncWrapper");
-const Notification = require("../Models/notification")
+const Notification = require("../Models/notification");
+
+
+
 const removeProfileImage = () => {
 
     const { profile_image_path } = req.body
@@ -78,11 +81,14 @@ const updateUser = async (req, res) => {
 
 const getUserProfile = async (req, res) => {
     const username = req.params.id
-    console.log(username, "username")
-
+    console.log(username, req.user.username)
+const follower= req.user.username
     try {
-        const [row] = await db.execute(`SELECT username,email,profile_image_path,followers,followers, following,id,firstname, lastname,bio,location, created_at FROM users WHERE username="${username}"`)
+        const [row] = await db.execute(`SELECT username,email,profile_image_path,followers,followers, following,id,firstname, lastname,bio,location, created_at FROM users WHERE username="${username}" `)
         // console.log("user", row)
+        const [followResult]= await db.execute(`SELECT * FROM followers WHERE follower="${follower}" AND following="${username}"`)
+        row[0].isFollowing= (followResult[0]?.following===username)
+        console.log("profile data", row[0], followResult)
         res.status(StatusCodes.OK).json({ "user": row })
 
     }
@@ -97,8 +103,8 @@ const addFollower = asyncWrapper(async (req, res, next) => {
 
     const [row] = await db.execute(`INSERT INTO followers (follower, following) VALUES ("${follower}","${following}")`)
     if (row) {
-        await db.execute(`UPDATE users SET followers=followers + 1 WHERE username="${follower}"`)
-        await db.execute(`UPDATE users SET following=following + 1 WHERE username="${following}"`)
+        await db.execute(`UPDATE users SET following=following + 1  WHERE username="${follower}"`)
+        await db.execute(`UPDATE users SET followers=followers + 1 WHERE username="${following}"`)
         await db.execute(`UPDATE tweetotherinfo SET following='${following}' WHERE follower='${follower}' AND tweet_id IN (SELECT tweet_id FROM tweets WHERE username='${following}')`)
     }
     res.status(StatusCodes.OK).json({ "message": 'success' })
@@ -116,8 +122,8 @@ const unFollow = asyncWrapper(async (req, res, next) => {
     const { follower, following } = req.body;
     const [row] = await db.execute(`DELETE FROM followers WHERE follower="${follower}" AND following="${following}" `)
     if (row) {
-        await db.execute(`UPDATE users SET followers=followers - 1 WHERE username="${follower}"`)
-        await db.execute(`UPDATE users SET following=following - 1 WHERE username="${following}"`)
+        await db.execute(`UPDATE users SET  following=following - 1  WHERE username="${follower}"`)
+        await db.execute(`UPDATE users SET followers=followers - 1 WHERE username="${following}"`)
         await db.execute(`UPDATE tweetotherinfo SET following="-1" WHERE follower="${follower}" AND following ="${following}"`)
 
     }

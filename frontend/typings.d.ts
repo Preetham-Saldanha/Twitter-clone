@@ -42,7 +42,8 @@ export type profileDataType = {
     lastname: string;
     bio:string;
     created_at:string;
-    location?:string
+    location?:string;
+    isFollowing?:boolean
   
   }
 // {
