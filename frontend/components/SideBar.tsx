@@ -91,17 +91,20 @@ function SideBar(props: Props) {
   }, [isLogout])
 
   useEffect(() => {
+     fetchNotifications().then(size => setNumberOfNotifications(size)).catch(err=> console.log("occured during cheking if notifications present",err));
+ 
+
     const ID = setInterval(async () => {
       const size = await fetchNotifications();
-
-  setNumberOfNotifications(size)
-
+      if (size !== numberOfNotifications) {
+        setNumberOfNotifications(size)
+      }
       return clearInterval(ID)
 
     }, 5000)
 
 
-  },[])
+  }, [])
 
   return (
     <>

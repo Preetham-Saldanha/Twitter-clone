@@ -105,7 +105,7 @@ function Feed({ tweets: tweetsProp }: Props) {
   useEffect(() => {
     setTweets(newTweets)
   }, [newTweets])
-
+console.log(router.pathname,'is the currnt')
   return (
     <>
      {/* {showModal && createPortal(
