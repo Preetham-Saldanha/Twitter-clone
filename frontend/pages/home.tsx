@@ -18,33 +18,27 @@ type Data = {
 }
 function Home({ tweets }: Props) {
 
-
-
     return (
         <Layout row={1}>
-            <Feed tweets={tweets} />
+            <Feed />
         </Layout>
-
-
-
-
     )
 }
 
-export const getServerSideProps: GetServerSideProps = async () => {
-    // const tweets = await fetchTweets();
-    // const tweets=null
-    // const axiosPrivate = usePrivateAxios()
-    // const {auth, setAuth} : any = useAuth()
+// export const getServerSideProps: GetServerSideProps = async () => {
+//     // const tweets = await fetchTweets();
+//     // const tweets=null
+//     // const axiosPrivate = usePrivateAxios()
+//     // const {auth, setAuth} : any = useAuth()
 
 
-    const data: Data = (await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/tweet/-1`)).data
-    // axiosPrivate.defaults.headers.common['Authorization'] = `Bearer ${auth.accessToken}`
-    // const data: Data = (await axiosPrivate.get(`/api/v1/tweet`)).data
-    const tweets: Tweet[] = data.tweets;
+//     const data: Data = (await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/tweet/-1`)).data
+//     // axiosPrivate.defaults.headers.common['Authorization'] = `Bearer ${auth.accessToken}`
+//     // const data: Data = (await axiosPrivate.get(`/api/v1/tweet`)).data
+//     const tweets: Tweet[] = data.tweets;
 
-    return {
-        props: { tweets }
-    }
-}
+//     return {
+//         props: { tweets }
+//     }
+// }
 export default Home

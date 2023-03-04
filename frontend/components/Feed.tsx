@@ -31,7 +31,7 @@ const tweet = {
 
 
 
-function Feed({ tweets: tweetsProp }: Props) {
+function Feed() {
 
   const observer = useRef<null | IntersectionObserver>(null)
   const [pageNumber, setPageNumber] = useState<number>(-1)

@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react';
+import useSWR from 'swr'
 import {
   HomeIcon,
   BellIcon,
@@ -75,13 +76,16 @@ function SideBar(props: Props) {
     }
   }
 
-  const fetchNotifications = async () => {
-    const { result } = await (await axiosPrivate.post("/api/v1/notification/", { username: auth.username })).data;
-    console.log(result)
-    // setNotifications()
-    return result.length
-  }
+  // const fetchNotifications = async () => {
+  //   const { result } = await (await axiosPrivate.post("/api/v1/notification/", { username: auth.username })).data;
+  //   console.log(result)
+  //   // setNotifications()
+  //   return result.length
+  // }
 
+  const fetchNotifications = (url) => axiosPrivate.post(url, { username: auth.username }).then(data => data.data)
+  const { data } = useSWR("/api/v1/notification/", fetchNotifications)
+  console.log(data?.result)
   useEffect(() => {
 
 
@@ -90,9 +94,19 @@ function SideBar(props: Props) {
     }
   }, [isLogout])
 
+  useEffect(() => {
+    if(data?.result?.length){
+      console.log("it ihb")
+    setNumberOfNotifications(data?.result.length)
+    }
+    return () => {
+     
+    }
+  }, [data])
+  
   // useEffect(() => {
   //    fetchNotifications().then(size => setNumberOfNotifications(size)).catch(err=> console.log("occured during cheking if notifications present",err));
- 
+
 
   //   const ID = setInterval(async () => {
   //     const size = await fetchNotifications();
@@ -122,7 +136,7 @@ function SideBar(props: Props) {
         {/* <SideBarRow Icon={HashtagIcon} title={"Explore"} /> */}
         {auth?.username !== "" &&
           <>
-            <SideBarRow Icon={activeRow === 2 ? SolidBellIcon : BellIcon} title={"Notifications"} handleActive={handleActive} rowNumber={2} activeRow={activeRow} numberOfNotifications={numberOfNotifications} />
+            <SideBarRow Icon={activeRow === 2 ? SolidBellIcon : BellIcon} title={"Notifications"} handleActive={handleActive} rowNumber={2} activeRow={activeRow} numberOfNotifications={data?.result.length} />
 
             {/* <SideBarRow Icon={EnvelopeIcon} title={"messages"} /> */}
             {/* <SideBarRow Icon={BookmarkIcon} title={""} /> */}

@@ -68,9 +68,9 @@ const Tweet = forwardRef(({ tweet, isInsideReplyModal, handleReply }: Props, ref
       toast.success("followed successfully")
 
     }
-    setTimeout(()=>{
+    setTimeout(() => {
       toast.dismiss()
-    },1200)
+    }, 1200)
 
   }
   const updateTweet = async (action) => {
@@ -79,17 +79,27 @@ const Tweet = forwardRef(({ tweet, isInsideReplyModal, handleReply }: Props, ref
     let ft_flag = 1;
 
     if (action === "like") {
+      const newLikeCount = isLike ? likeCount - 1 : likeCount + 1
+      setLikeCount(newLikeCount)
+      setLike(prev => !prev)
+
       if (isLike) {
         ft_flag = -1
         // setLikeCount(prev => prev - 1)
+
       } else {
         // setLikeCount(prev => prev + 1)
       }
       rt_flag = 0
     }
     else {
+      
+      const newRetweetCount = isRetweet ? retweetCount - 1 : retweetCount + 1;
+      setRetweetCount(newRetweetCount)
+      setRetweet(prev => !prev)
       if (isRetweet) {
         rt_flag = -1
+
         // setRetweetCount(prev => prev - 1)
       } else {
         // setRetweetCount(prev => prev + 1)
@@ -105,14 +115,14 @@ const Tweet = forwardRef(({ tweet, isInsideReplyModal, handleReply }: Props, ref
 
       if (result) {
         if (action === "like") {
-          const newLikeCount = isLike ? likeCount - 1 : likeCount + 1
-          setLikeCount(newLikeCount)
-          setLike(prev => !prev)
+          // const newLikeCount = isLike ? likeCount - 1 : likeCount + 1
+          // setLikeCount(newLikeCount)
+          // setLike(prev => !prev)
 
         } else {
-          const newRetweetCount = isRetweet ? retweetCount - 1 : retweetCount + 1;
-          setRetweetCount(newRetweetCount)
-          setRetweet(prev => !prev)
+          // const newRetweetCount = isRetweet ? retweetCount - 1 : retweetCount + 1;
+          // setRetweetCount(newRetweetCount)
+          // setRetweet(prev => !prev)
         }
       }
     }
