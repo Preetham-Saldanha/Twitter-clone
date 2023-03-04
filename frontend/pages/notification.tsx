@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Toaster } from 'react-hot-toast'
 import { axiosPrivate } from '../api_utils/axios'
+import Layout from '../components/Layout'
 import NotificationCard from '../components/NotificationCard'
 import SideBar from '../components/SideBar'
 import Widget from '../components/Widget'
@@ -25,19 +26,18 @@ function Notification() {
 
     return (
 
-<>   <Toaster position="top-center"
-        reverseOrder={false} />
-        <div className='grid grid-cols-9  font-roboto  lg:max-w-6xl mx-auto'>
-            <SideBar row={2} />
+        <>   <Toaster position="top-center"
+            reverseOrder={false} />
 
-            <div className='lg:col-span-5 col-span-7 border-gray-100 border-x max-h-screen overflow-scroll scrollbar-hide'>
-                <h1 className='p-5 pb-0 text-xl font-bold m-auto  text-center'>Notifications</h1>
-             {notifications.length===0? <div className='text-center mt-4 font-roboto font-medium text-slate-400 text-3xl'>No notifications yet </div> : notifications?.map(notification => <NotificationCard notification={notification} key={notification.created_at}/>)}
-                {/* Nothing to display here */}
-            </div>
+            <Layout row={2}>
+                <div className='lg:col-span-5 col-span-7 border-gray-100 border-x max-h-screen overflow-scroll scrollbar-hide'>
+                    <h1 className='p-5 pb-0 text-xl font-bold m-auto  text-center'>Notifications</h1>
+                    {notifications.length === 0 ? <div className='text-center mt-4 font-roboto font-medium text-slate-400 text-3xl'>No notifications yet </div> : notifications?.map(notification => <NotificationCard notification={notification} key={notification.created_at} />)}
+                    {/* Nothing to display here */}
+                </div>
+            </Layout>
 
-            <Widget /></div>
-            </>
+        </>
     )
 }
 
